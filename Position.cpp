@@ -4,7 +4,7 @@
 
 #include "Position.h"
 #include "SAT_Const.h"
-void Position(double lon, double lat, double h, double r[3]) {
+void Position(double lon, double lat, double h, Matrix r) {
 
     double R_equ = Constants::R_Earth;
     double f = Constants::f_Earth;
@@ -16,7 +16,7 @@ void Position(double lon, double lat, double h, double r[3]) {
     // Position vector
     double N = R_equ / sqrt(1.0 - e2 * SinLat * SinLat);
 
-    r[0] = (N + h) * CosLat * cos(lon);
-    r[1] = (N + h) * CosLat * sin(lon);
-    r[2] = ((1.0 - e2) * N + h) * SinLat;
+    r(1,1) = (N + h) * CosLat * cos(lon);
+    r(1,2) = (N + h) * CosLat * sin(lon);
+    r(1,3) = ((1.0 - e2) * N + h) * SinLat;
 }

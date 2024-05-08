@@ -6,7 +6,9 @@
 #define UNTITLED_POSITION_H
 
 
-void Position(double lon, double lat, double h, double r[3]);
+#include "Matrix.h"
+
+void Position(double lon, double lat, double h, Matrix r);
 
 
 #endif //UNTITLED_POSITION_H

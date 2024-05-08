@@ -1,4 +1,4 @@
-C:\URApps\CLion_2022_2_2\CLion-2022.2.2.win\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/URApps/CLion_2022_2_2/CLion-2022.2.2.win/bin/ninja/win/ninja.exe -G Ninja -S "E:\UNI\2do Semestre\TTT\TrabajoTaller" -B "E:\UNI\2do Semestre\TTT\TrabajoTaller\cmake-build-debug"
+C:\URApps\CLion_2022_2_2\CLion-2022.2.2.win\bin\cmake\win\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=C:/URApps/CLion_2022_2_2/CLion-2022.2.2.win/bin/ninja/win/ninja.exe -G Ninja -S C:\Users\isboudja\CLionProjects\TallerTrabajo2 -B C:\Users\isboudja\CLionProjects\TallerTrabajo2\cmake-build-debug
 -- Configuring done
 -- Generating done
--- Build files have been written to: E:/UNI/2do Semestre/TTT/TrabajoTaller/cmake-build-debug
+-- Build files have been written to: C:/Users/isboudja/CLionProjects/TallerTrabajo2/cmake-build-debug

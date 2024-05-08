@@ -49,25 +49,26 @@ fixf = mfme / 1440.;
     preeop.print();
 } else if (interp == 'n') {
 int mjd = floor(Mjd_UTC);
-    for (i = 0; i < eop.fil; i++) {
-        if(eop(i,1)==mjd){
-            mjd = i;
+    for (i = 0; i < 13; i++) {
+        if(eop(4,i+1)==mjd){
+            mjd = i+1;
             break;
+
         }
     }
 for (i = 0; i < 13; i++) {
     preeop(1,i+1) = eop(mjd,i+1);
 }
 
-    Result(1,1)  = preeop(1,4) / Constants::Arcs;
-    Result(1,2) = preeop(1,5) / Constants::Arcs;
-    Result(1,3)= preeop(1,6);
-    Result(1,4) = preeop(1,7);
-    Result(1,5)= preeop(1,8) / Constants::Arcs;
-    Result(1,6) = preeop(1,9) / Constants::Arcs;
-    Result(1,7) = preeop(1,10) / Constants::Arcs;
-    Result(1,8) = preeop(1,11) / Constants::Arcs;
-    Result(1,9) = preeop(1,12);
+    Result(1,1)  = preeop(1,5) / Constants::Arcs;
+    Result(1,2) = preeop(1,6) / Constants::Arcs;
+    Result(1,3)= preeop(1,7);
+    Result(1,4) = preeop(1,8);
+    Result(1,5)= preeop(1,9) / Constants::Arcs;
+    Result(1,6) = preeop(1,10) / Constants::Arcs;
+    Result(1,7) = preeop(1,11) / Constants::Arcs;
+    Result(1,8) = preeop(1,12) / Constants::Arcs;
+    Result(1,9) = preeop(1,13);
 
 }
 

@@ -53,6 +53,7 @@ const double Constants::GM_Saturn = 37940585.200000e9;
 const double Constants::GM_Uranus = 5794548.600000e9;
 const double Constants::GM_Neptune = 6836527.100580e9;
 const double Constants::GM_Pluto = 977.0000000000009e9;
+
 #define FAIL() printf("\nfailure in %s() line %d\n", __func__, __LINE__)
 #define _assert(test) do { if (!(test)) { FAIL(); return 1; } } while(0)
 #define _verify(test) do { int r=test(); tests_run++; if(r) return r; } while(0)
@@ -314,11 +315,12 @@ int Pos(){
 
     double tolerance = 10e-7;
     double v1[] = {1.0, 2.0, 3.0};
+    Matrix r(1,3,v1,3);
     double d1 = 1.866376490700467e+06 ;
     double d2 =  2.906709163731216e+06;
     double d3 =  5.343768700880938e+06;
-    Position(1,1,1,v1);
-    _assert((fabs(d1-v1[0])<tolerance)&&(fabs(d2-v1[1])<tolerance)&&(fabs(d3-v1[2])<tolerance));
+    Position(1,1,1,r);
+    _assert((fabs(d1-r(1,1))<tolerance)&&(fabs(d2-r(1,2))<tolerance)&&(fabs(d3-r(1,3))<tolerance));
 
     return 0;
 }
@@ -415,7 +417,7 @@ int all_tests()
 int main()
 {
     globals::eop1962(13);
-
+    globals::egm(46);
 
     int result = all_tests();
 

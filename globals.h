@@ -13,8 +13,12 @@ class globals {
 public:
     static Matrix *matrix;
     static Matrix *matrix2;
+    static Matrix *Cnm;
+    static Matrix *Snm;
+    static Matrix *temp;
     static void eop1962(int c);
-    static void egm(int c);
+    static void GEOS3(int c);
+    static void GGM(int c);
 
 };
 
