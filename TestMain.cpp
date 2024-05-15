@@ -30,29 +30,7 @@
 
 using namespace std;
 int tests_run = 0;
-const double Constants::pi2 = 2 * M_PI;
-const double Constants::Rad = M_PI / 180;
-const double Constants::Deg = 180 / M_PI;
-const double Constants::Arcs = 3600 * 180 / M_PI;
-const double Constants::MJD_J2000 = 51544.5;
-const double Constants::T_B1950 = -0.500002108;
-const double Constants::c_light = 299792458.000000000;
-const double Constants::AU = 149597870700.000000;
-const double Constants::f_Earth = 1 / 298.257223563;
-const double Constants::R_Sun = 696000e3;
-const double Constants::R_Moon = 1738e3;
-const double Constants::omega_Earth = 15.04106717866910 / 3600 * Constants::Rad;
-const double Constants::GM_Earth = 3.986e14;
-const double Constants::GM_Sun = 132712440041.939400e9;
-const double Constants::GM_Moon = Constants::GM_Earth / 81.30056907419062;
-const double Constants::GM_Mercury = 22031.780000e9;
-const double Constants::GM_Venus = 324858.592000e9;
-const double Constants::GM_Mars = 42828.375214e9;
-const double Constants::GM_Jupiter = 126712764.800000e9;
-const double Constants::GM_Saturn = 37940585.200000e9;
-const double Constants::GM_Uranus = 5794548.600000e9;
-const double Constants::GM_Neptune = 6836527.100580e9;
-const double Constants::GM_Pluto = 977.0000000000009e9;
+Constants c;
 
 #define FAIL() printf("\nfailure in %s() line %d\n", __func__, __LINE__)
 #define _assert(test) do { if (!(test)) { FAIL(); return 1; } } while(0)
@@ -136,7 +114,7 @@ int AccelPointMass(){
     Matrix r = Matrix(1,3, r_values,3);
     Matrix s = Matrix(1,3, s_values, 3);
 
-    Matrix result = AccelPointMass(r, s, Constants::GM_Earth);
+    Matrix result = AccelPointMass(r, s, c.GM_Earth);
     double num1 = -0.767106057663283e14;
     double num2 = -1.123624735995849e14;
     double num3 = -1.480143414328416e14;
@@ -301,8 +279,8 @@ int Nut(){
     double tolerance = 10e-10;
     double d1 = 2.761314268655568e-05;
     double d2 =  3.961309941887382e-05;
-    long double sol1;
-    long double sol2;
+    double sol1;
+    double sol2;
     NutAngles(0.5,sol1,sol2);
     _assert((fabs(d1-sol1)<tolerance)&&(fabs(d2-sol2)<tolerance));
 
@@ -388,6 +366,60 @@ int IER(){
 
     return 0;
 }
+
+int PMatrix(){
+
+
+    Mjd_TT = AuxParam.Mjd_UTC + x/86400 + TT_UTC/86400;
+
+    P = PrecMatrix(const.MJD_J2000,Mjd_TT);
+    Matrix result(1,9);
+    result = IERS(*globals::matrix,Mjd_UTC,interp);
+    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
+    Matrix expected(1, 9, expected_values, 9);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+int NMatrix(){
+
+
+    double tolerance = 10e-4;
+    Matrix val(13,13);
+    double Mjd_UTC = 37665.5;
+    char interp = 'l';
+    Matrix result(1,9);
+    result = IERS(*globals::matrix,Mjd_UTC,interp);
+    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
+    Matrix expected(1, 9, expected_values, 9);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+int PoMatrix(){
+
+
+    double tolerance = 10e-4;
+    Matrix val(13,13);
+    double Mjd_UTC = 37665.5;
+    char interp = 'l';
+    Matrix result(1,9);
+    result = IERS(*globals::matrix,Mjd_UTC,interp);
+    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
+    Matrix expected(1, 9, expected_values, 9);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
 int all_tests()
 {
     _verify(proMat_01);
@@ -416,8 +448,7 @@ int all_tests()
 
 int main()
 {
-    globals::eop1962(13);
-    globals::egm(46);
+
 
     int result = all_tests();
 

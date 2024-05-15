@@ -6,7 +6,7 @@
 #define UNTITLED_NUTANGLES_H
 
 
-void NutAngles(double Mjd_TT,long double& dpsi,long double& deps);
+void NutAngles(double Mjd_TT,double& dpsi, double& deps);
 
 
 #endif //UNTITLED_NUTANGLES_H

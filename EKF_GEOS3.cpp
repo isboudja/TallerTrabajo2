@@ -14,16 +14,8 @@
 #include "gmst.h"
 #include "R_z.h"
 #include "AzElPa.h"
+#include "AuxParam.h"
 
-struct AuxParam {
-    double Mjd_UTC;
-    int n;
-    int m;
-    int planets;
-    int sun;
-    int moon;
-    double Mjd_TT;
-};
 
 int main() {
 

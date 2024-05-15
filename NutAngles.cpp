@@ -7,9 +7,8 @@
 #include "Matrix.h"
 #include "math.h"
 
-double custom_mod(long double d,long double rev);
 
-void NutAngles(double Mjd_TT,long double& dpsi,long double& deps) {
+void NutAngles(double Mjd_TT, double& dpsi, double& deps) {
     long double T = (Mjd_TT - 51544.5) / 36525.0;
     long double T2 = T * T;
     long double T3 = T2 * T;
@@ -145,7 +144,5 @@ void NutAngles(double Mjd_TT,long double& dpsi,long double& deps) {
     deps = 1.0e-5 * deps /(3600 * 180 / M_PI);
 }
 
-double custom_mod(long double x,long double y) {
-    return x - y * floor(x / y);
-}
+
 

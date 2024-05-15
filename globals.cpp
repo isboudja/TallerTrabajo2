@@ -89,3 +89,22 @@ for (m=0;m<=n;m++) {
 fclose(fid);
 
 }
+
+void globals::DE430() {
+    FILE *fid = fopen("./texts/DE430","r");
+    Matrix PC(2285,1020);
+    if(fid==nullptr){
+        printf("error");
+        exit(EXIT_FAILURE);
+    }
+    int n;
+    int m;
+    for (n=0;n<=2285;n++){
+        for (m=0;m<=1020;m++) {
+            fscanf(fid, "%lf",&PC(n+1,m+1));
+        }
+    }
+
+    fclose(fid);
+
+}

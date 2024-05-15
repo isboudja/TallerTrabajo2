@@ -19,6 +19,7 @@ public:
     static void eop1962(int c);
     static void GEOS3(int c);
     static void GGM(int c);
+    static void DE430();
 
 };
 
