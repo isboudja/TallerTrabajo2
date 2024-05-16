@@ -201,3 +201,41 @@ void Matrix::print()
     }
     std::cout << std::endl;
 }
+
+Matrix Matrix::sub(int i, int j) const{
+    if (i < 0 || i >= fil || j < 0 || j >= col) {
+        throw std::out_of_range("Indices out of range");
+    }
+
+
+    int newCol = col - (j-i);
+    Matrix subMatrix(1, newCol);
+
+    for (int x = 0; x < 1; ++x) {
+        for (int y = 0; y < newCol; ++y) {
+            subMatrix.matrix[x][y] = matrix[i + x][j + y];
+        }
+    }
+
+    return subMatrix;
+}
+
+Matrix Matrix::concat(const Matrix& mat1, const Matrix& mat2) const{
+    if (mat1.fil != 1 || mat2.fil != 1) {
+        throw std::invalid_argument("Ambas matrices deben tener una fila para concatenarse.");
+    }
+
+    int newCol = mat1.col + mat2.col;
+    Matrix result(1, newCol);
+
+    for (int j = 0; j < mat1.col; ++j) {
+        result.matrix[0][j] = mat1.matrix[0][j];
+    }
+
+    for (int j = 0; j < mat2.col; ++j) {
+        result.matrix[0][mat1.col + j] = mat2.matrix[0][j];
+    }
+
+    return result;
+}
+
