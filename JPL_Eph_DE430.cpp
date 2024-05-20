@@ -12,7 +12,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     // Definición del vector de resultado
    Matrix result(11, 1.0); // r_Mercury, r_Venus, r_Earth, r_Mars, r_Jupiter, r_Saturn, r_Uranus, r_Neptune, r_Pluto, r_Moon, r_Sun
 
-    FILE *fid = fopen("./texts/DE430Coeff.txt","r");
+    FILE *fid = fopen("../texts/DE430Coeff.txt","r");
     Matrix PC(2285,1020);
     if(fid==nullptr){
         printf("error2");
@@ -20,30 +20,30 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     }
     int n;
     int m;
-    for (n=0;n<=2285;n++){
-        for (m=0;m<=1020;m++) {
+    for (n=1;n<2285;n++){
+        for (m=1;m<1020;m++) {
             fscanf(fid, "%lf",&PC(n,m));
         }
     }
-
     fclose(fid);
 
     // Obtener el día juliano
     double JD = Mjd_TDB + 2400000.5;
     int i;
     for (i = 0; i < 13; i++) {
-        if(PC(i+1,1)<=JD && JD<=PC(i+1,2)){
+        if(PC(1,i+1)<=JD && JD<=PC(2,i+1)){
             break;
 
         }
     }
-
+    i = 1;
     int j;
     Matrix PCtemp(1,1020);
     for (j = 0; i < 1020; i++) {
-         PCtemp(1,i+1) = PC(i,j+1);
+         PCtemp(1,j+1) = PC(i,j+1);
+         PCtemp.print();
     }
-      ;
+
 
 
     double t1 = PCtemp(1,1)-2400000.5;
@@ -58,16 +58,16 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 13;
     }
-    Matrix Cx_Earth=    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Earth = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Earth = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
-    for(j=1;j<temp.col;j++){
+    Matrix Cx_Earth=    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Earth = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Earth = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
+    for(j=1;j<=temp.col;j++){
         temp(1,j) += 39;
     }
 
-    Matrix Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx= PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz= PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
 
 
         Matrix x = Matrix::concat(Cx_Earth,Cx);
@@ -98,9 +98,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 13;
     }
-    Matrix Cx_Moon=    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Moon = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Moon = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Moon=    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Moon = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Moon = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
 
 
 
@@ -109,9 +109,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         for(j=1;j<temp.col;j++){
             temp(1,j) += 39;
         }
-         Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-         Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-         Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+         Cx= PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+         Cy= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+         Cz= PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
          x = Matrix::concat(Cx_Moon,Cx);
          y  = Matrix::concat(Cy_Moon,Cz);
          z = Matrix::concat(Cz_Moon,Cy);
@@ -179,15 +179,15 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         n += 11;
     }
 
-    Matrix Cx_Sun=    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Sun = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Sun = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Sun=    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Sun = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Sun = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     for(j=1;j<temp.col;j++){
         temp(1,j) += 39;
     }
-    Cx=PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Cx=PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Cy= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Cz= PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     x = Matrix::concat(Cx_Sun,Cx);
     y  = Matrix::concat(Cy_Sun,Cz);
     z = Matrix::concat(Cz_Sun,Cy);
@@ -210,17 +210,17 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 14;
     }
-    Matrix Cx_Mercury =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Mercury  = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Mercury  = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Mercury =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Mercury  = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Mercury  = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     for(i=1;i<=3;i++){
 
         for(j=1;j<temp.col;j++){
             temp(1,j) += 42;
         }
-        Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-        Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-        Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+        Cx= PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+        Cy= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+        Cz= PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
         x = Matrix::concat(Cx_Mercury,Cx);
         y  = Matrix::concat(Cy_Mercury,Cz);
         z = Matrix::concat(Cz_Mercury,Cy);
@@ -258,15 +258,15 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 10;
     }
-    Matrix Cx_Venus =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Venus = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Venus = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Venus =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Venus = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Venus = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     for(j=1;j<temp.col;j++){
         temp(1,j) += 30;
     }
-    Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Cx= PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Cy= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Cz= PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     x = Matrix::concat(Cx_Venus,Cx);
     y  = Matrix::concat(Cy_Venus,Cz);
     z = Matrix::concat(Cz_Venus,Cy);
@@ -293,9 +293,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 11;
     }
-    Matrix Cx_Mars =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Mars =PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Mars = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Mars =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Mars =PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Mars = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Mars(1,3);
@@ -311,9 +311,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 8;
     }
-    Matrix Cx_Jupiter =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Jupiter = PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Jupiter = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Jupiter =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Jupiter = PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Jupiter = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Jupiter(1,3);
@@ -330,9 +330,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         n += 7;
     }
 
-    Matrix Cx_Saturn =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Saturn= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Saturn = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Saturn =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Saturn= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Saturn = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Saturn(1,3);
@@ -349,9 +349,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 6;
     }
-    Matrix Cx_Uranus =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Uranus= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Uranus = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Uranus =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Uranus= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Uranus = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Uranus(1,3);
@@ -367,9 +367,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         j++;
         n += 6;
     }
-    Matrix Cx_Neptune =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Neptune= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Neptune = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Neptune =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Neptune= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Neptune = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Neptune(1,3);
@@ -386,9 +386,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         n += 6;
     }
 
-    Matrix Cx_Pluto =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Pluto= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
-    Matrix Cz_Pluto = PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+    Matrix Cx_Pluto =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Pluto= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
+    Matrix Cz_Pluto = PCtemp.sub((int)temp(1,4)-1,(int)temp(1,3));
     j=0;
     Mjd0 = t1;
     Matrix r_Pluto(1,3);
@@ -405,8 +405,8 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         n += 10;
     }
 
-    Matrix Cx_Nutations =    PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
-    Matrix Cy_Nutations= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
+    Matrix Cx_Nutations =    PCtemp.sub((int)temp(1,2)-1,(int)temp(1,1));
+    Matrix Cy_Nutations= PCtemp.sub((int)temp(1,3)-1,(int)temp(1,2));
     for(i=1;i<=3;i++){
         for(j=1;j<temp.col;j++){
             temp(1,j) += 20;

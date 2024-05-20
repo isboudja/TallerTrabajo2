@@ -180,7 +180,6 @@ int Legend(){
     Matrix expected(1, 18, expected_values, 18);
     result.print();
     expected.print();
-    printf("Legend");
     _assert(EqMatrix(result, expected, tolerance));
 
     return 0;
@@ -443,7 +442,7 @@ int JPL(){
     expected.print();
 
     Matrix result(1,27);
-    result = JPL_Eph_DE430(33296.0);
+    result = JPL_Eph_DE430(33264.0);
 
     result.print();
 

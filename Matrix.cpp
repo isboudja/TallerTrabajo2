@@ -203,19 +203,18 @@ void Matrix::print()
 }
 
 Matrix Matrix::sub(int i, int j) const{
-    if (i < 0 || i >= fil || j < 0 || j >= col) {
+    if (j < 0 || j >= col) {
         throw std::out_of_range("Indices out of range");
     }
 
 
-    int newCol = col - (j-i);
+    int newCol = (i-j);
     Matrix subMatrix(1, newCol);
 
-    for (int x = 0; x < 1; ++x) {
         for (int y = 0; y < newCol; ++y) {
-            subMatrix.matrix[x][y] = matrix[i + x][j + y];
+            subMatrix.matrix[0][y] = matrix[0][j + y];
         }
-    }
+
 
     return subMatrix;
 }
