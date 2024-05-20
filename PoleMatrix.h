@@ -8,7 +8,7 @@
 
 #include "Matrix.h"
 
-Matrix PoleMatrix(double xp, double yp)
+Matrix PoleMatrix(double xp, double yp);
 
 
 #endif //UNTITLED_POLEMATRIX_H

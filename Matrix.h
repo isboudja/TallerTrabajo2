@@ -10,7 +10,7 @@ class Matrix
         int fils();
         int cols();
         Matrix sub(int i,int j) const;
-        static Matrix concat(const Matrix& mat1, const Matrix& mat2) const;
+        static Matrix concat(const Matrix& mat1, const Matrix& mat2);
         int fil;
         int col;
         Matrix(const Matrix& m);

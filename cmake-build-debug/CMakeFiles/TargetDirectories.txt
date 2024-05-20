@@ -1,3 +1,3 @@
-C:/Users/isboudja/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/untitled.dir
-C:/Users/isboudja/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/isboudja/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/itsfr/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/untitled.dir
+C:/Users/itsfr/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/itsfr/CLionProjects/TallerTrabajo2/cmake-build-debug/CMakeFiles/rebuild_cache.dir

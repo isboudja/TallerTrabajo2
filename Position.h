@@ -8,7 +8,7 @@
 
 #include "Matrix.h"
 
-void Position(double lon, double lat, double h, Matrix r);
+void Position(double lon, double lat, double h, Matrix& r);
 
 
 #endif //UNTITLED_POSITION_H

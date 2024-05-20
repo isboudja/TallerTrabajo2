@@ -54,7 +54,7 @@ void globals::GEOS3(int c) {
     int n;
     int m;
     for (n=0;n<=46;n++){
-            fscanf(fid, "%lf%lf%lf%lf%lf%lf%lf%lf%lf",&Y,&M,&d,&H,&min,&s,&az,&el,%Dist);
+            fscanf(fid, "%lf%lf%lf%lf%lf%lf%lf%lf%lf",&Y,&M,&d,&H,&min,&s,&az,&el,&Dist);
             obs(n,1) = Mjday(Y,M,d,H,m,s);
             obs(n,2) = Constants::Rad*az;
             obs(n,3) = Constants::Rad*el;
@@ -65,7 +65,7 @@ void globals::GEOS3(int c) {
     fclose(fid);
 
 }
-
+/*
 void globals::GGM(int c) {
 //    = new Matrix(13,c);
 FILE *fid = fopen("./texts/GGM03S.txt","r");
@@ -89,6 +89,7 @@ for (m=0;m<=n;m++) {
 fclose(fid);
 
 }
+ */
 
 void globals::DE430() {
     FILE *fid = fopen("./texts/DE430","r");

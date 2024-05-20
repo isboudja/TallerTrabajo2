@@ -8,7 +8,7 @@
 #include "Matrix.h"
 #include "math.h"
 #include "sign_.h"
-
+/*
 struct DE_STATE {
     int DE_INIT = 1;
     int DE_DONE = 2;
@@ -49,7 +49,7 @@ Matrix DEInteg(double (*func)(double, Matrix), double t, double tout, double rel
     Matrix psi_(13, 1.0);
 
     if (t == tout) {
-        return;
+
     }
 
     double epsilon = std::max(relerr, abserr);
@@ -57,7 +57,7 @@ Matrix DEInteg(double (*func)(double, Matrix), double t, double tout, double rel
     if (relerr < 0.0 || abserr < 0.0 || epsilon <= 0.0 || State_ > DE_STATE.DE_INVPARAM ||
         (State_ != DE_STATE.DE_INIT && t != told)) {
         State_ = DE_STATE.DE_INVPARAM;
-        return;
+
     }
 
     double del = tout - t;
@@ -160,9 +160,9 @@ Matrix DEInteg(double (*func)(double, Matrix), double t, double tout, double rel
     5394.06894044333
     -2365.21290573999
     -7061.84481373379
-*/
+
 
 
 
     return y;
-}
+}*/

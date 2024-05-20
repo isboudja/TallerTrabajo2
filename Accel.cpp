@@ -16,7 +16,7 @@
 #include "IERS.h"
 #include "globals.h"
 #include "JPL_Eph_DE430.h"
-
+/*
 Matrix Accel(double x,double Y){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
@@ -104,4 +104,4 @@ Matrix Accel(double x,double Y){
 
 
 
-}
+}*/

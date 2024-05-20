@@ -220,7 +220,7 @@ Matrix Matrix::sub(int i, int j) const{
     return subMatrix;
 }
 
-Matrix Matrix::concat(const Matrix& mat1, const Matrix& mat2) const{
+Matrix Matrix::concat(const Matrix& mat1, const Matrix& mat2){
     if (mat1.fil != 1 || mat2.fil != 1) {
         throw std::invalid_argument("Ambas matrices deben tener una fila para concatenarse.");
     }

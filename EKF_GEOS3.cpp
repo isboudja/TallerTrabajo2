@@ -16,7 +16,7 @@
 #include "AzElPa.h"
 #include "AuxParam.h"
 
-
+/*
 int main() {
 
     // Carga de archivos
@@ -232,4 +232,4 @@ int main() {
     std::cout << "dVz: " << error_vel[2] << " [m/s]" << std::endl;
 
     return 0;
-}
+}*/

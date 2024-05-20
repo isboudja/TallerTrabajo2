@@ -4,7 +4,7 @@
 
 #include "Position.h"
 #include "SAT_Const.h"
-void Position(double lon, double lat, double h, Matrix r) {
+void Position(double lon, double lat, double h, Matrix& r) {
 
     double R_equ = Constants::R_Earth;
     double f = Constants::f_Earth;

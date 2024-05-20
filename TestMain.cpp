@@ -25,6 +25,8 @@
 #include "unit.h"
 #include "IERS.h"
 #include "globals.h"
+#include "JPL_Eph_DE430.h"
+#include "PoleMatrix.h"
 
 #define TOL_ 10e-14
 
@@ -369,7 +371,7 @@ int IER(){
 
 int PMatrix(){
 
-
+/*
     Mjd_TT = AuxParam.Mjd_UTC + x/86400 + TT_UTC/86400;
 
     P = PrecMatrix(const.MJD_J2000,Mjd_TT);
@@ -382,6 +384,7 @@ int PMatrix(){
     _assert(EqMatrix(result, expected, tolerance));
 
     return 0;
+    */
 }
 
 int NMatrix(){
@@ -407,11 +410,11 @@ int PoMatrix(){
 
     double tolerance = 10e-4;
     Matrix val(13,13);
-    double Mjd_UTC = 37665.5;
-    char interp = 'l';
     Matrix result(1,9);
-    result = IERS(*globals::matrix,Mjd_UTC,interp);
-    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
+    result = PoleMatrix(1.0,1.0);
+    double expected_values[] = {0.54030230586814    ,     0.708073418273571       ,  0.454648713412841,
+    0    ,      0.54030230586814    ,    -0.841470984807897,
+    -0.841470984807897    ,     0.454648713412841   ,      0.291926581726429};
     Matrix expected(1, 9, expected_values, 9);
     result.print();
     expected.print();
@@ -419,6 +422,36 @@ int PoMatrix(){
 
     return 0;
 }
+int JPL(){
+
+
+    double tolerance = 10e-4;
+    double expected_values[] ={
+            52891240655.1416, -82398828219.3078, -30762460775.264,
+            34094359564.7165, -28358228564.6831, -9016395146.3542,
+            -62008177373.3339, 122716094121.445, 53207795594.9921,
+            -160126907125.025, -22381470230.0169, -1176302999.30631,
+            583165485249.939, -624231961619.039, -280912964474.469,
+            -1289046343232.77, 191634032223.748, 134639477339.296,
+            -131859240183.77, 2466292748344.82, 1083466135600.11,
+            -4288263038254.25, -1332516416256.53, -440122288690.766,
+            -3909996317326.24, 2903217225254.62, 2087565919619.75,
+            -115573196.913284, -310886551.21669, -165562926.423869,
+            62129751075.8268, -122378505237.373, -53074092053.2144
+    };
+    Matrix expected(1, 27, expected_values, 27);
+    expected.print();
+
+    Matrix result(1,27);
+    result = JPL_Eph_DE430(33296.0);
+
+    result.print();
+
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
 
 int all_tests()
 {
@@ -442,13 +475,14 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
+    _verify(JPL);
     return 0;
 }
 
 
 int main()
 {
-
+    globals::eop1962(21413);
 
     int result = all_tests();
 

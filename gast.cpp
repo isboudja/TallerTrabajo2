@@ -5,6 +5,7 @@
 #include <cmath>
 #include "gast.h"
 #include "gmst.h"
+#include "EqnEquinox.h"
 
 
 double gast(double Mjd_UT1) {
