@@ -26,6 +26,13 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         }
     }
 
+    printf("Fila  ");
+    for (m = 0; m < 1020; m++) {
+        printf("%.15lf ", PC(1, m+1)); // Modificar el formato según necesites
+    }
+    printf("\n");
+
+
     fclose(fid);
 
     // Obtener el día juliano
@@ -248,7 +255,6 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     res2= y.sub((14*j+14),(14*j+1));
     res3= z.sub((14*j+14),(14*j+1));
     r_Mercury = Cheb3D(Mjd_TDB, 14, Mjd0, Mjd0+8, res1,res2,res3)*1e3;
-    r_Mercury.print();
     n=171;
     j=1;
     while(n<=201){
