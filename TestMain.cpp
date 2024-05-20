@@ -438,10 +438,10 @@ int JPL(){
             -115573196.913284, -310886551.21669, -165562926.423869,
             62129751075.8268, -122378505237.373, -53074092053.2144
     };
-    Matrix expected(1, 27, expected_values, 27);
+    Matrix expected(1, 33, expected_values, 33);
     expected.print();
 
-    Matrix result(1,27);
+    Matrix result(1,33);
     result = JPL_Eph_DE430(33264.0);
 
     result.print();
