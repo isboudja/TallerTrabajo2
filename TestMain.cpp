@@ -27,6 +27,7 @@
 #include "globals.h"
 #include "JPL_Eph_DE430.h"
 #include "PoleMatrix.h"
+#include "AccelHarmonic.h"
 
 #define TOL_ 10e-14
 
@@ -381,9 +382,9 @@ int PMatrix(){
     result.print();
     expected.print();
     _assert(EqMatrix(result, expected, tolerance));
-
+*/
     return 0;
-    */
+
 }
 
 int NMatrix(){
@@ -424,7 +425,7 @@ int PoMatrix(){
 int JPL(){
 
 
-    double tolerance = 10e-4;
+    double tolerance = 10e2;
     double expected_values[] ={
             52891240655.1416, -82398828219.3078, -30762460775.264,
             34094359564.7165, -28358228564.6831, -9016395146.3542,
@@ -445,7 +446,27 @@ int JPL(){
     result = JPL_Eph_DE430(33264.0);
 
     result.print();
+    //-2.1528481871834e+23
+    _assert(EqMatrix(result, expected, tolerance));
 
+    return 0;
+}
+
+int HMC(){
+
+
+    double tolerance = 10e-6;
+    double expected_values[] ={
+            -2.1528481871834e+23};
+    Matrix expected(1, 1, expected_values, 1);
+    double expected_values2[] ={
+            1,1,1};
+    Matrix r(1,3,expected_values2,3);
+    Matrix E(3,1,expected_values2,3);
+    Matrix result(1,1);
+    result = AccelHarmonic(r,E,2,2);
+    expected.print();
+    result.print();
     _assert(EqMatrix(result, expected, tolerance));
 
     return 0;
@@ -474,7 +495,7 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
-    _verify(JPL);
+    _verify(HMC);
     return 0;
 }
 

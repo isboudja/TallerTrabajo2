@@ -28,7 +28,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
 
     printf("Fila  ");
     for (m = 0; m < 1020; m++) {
-        printf("%.15lf ", PC(1, m+1)); // Modificar el formato según necesites
+        printf("%.20lf ", PC(1, m+1)); // Modificar el formato según necesites
     }
     printf("\n");
 
@@ -37,7 +37,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
 
     // Obtener el día juliano
     double JD = Mjd_TDB + 2400000.5;
-    int i;
+    double i;
     for (i = 0; i < 13; i++) {
         if(PC(i+1,1)<=JD && JD<=PC(i+1,2)){
             break;
@@ -45,7 +45,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         }
     }
     i++;
-    int j;
+    double j;
     Matrix PCtemp(1,1020);
     for (j = 0; j < 1020; j++) {
          PCtemp(1,j+1) = PC(i,j+1);
@@ -92,9 +92,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         }
     }
     Matrix r_Earth(1,3);
-    Matrix res1 = x.sub((13*j+13),(13*j+1));
-    Matrix res2= y.sub((13*j+13),(13*j+1));
-    Matrix res3= z.sub((13*j+13),(13*j+1));
+    Matrix res1 = x.sub((13*j+13)+1,(13*j+1));
+    Matrix res2= y.sub((13*j+13)+1,(13*j+1));
+    Matrix res3= z.sub((13*j+13)+1,(13*j+1));
 
     r_Earth =Cheb3D(Mjd_TDB, 13, Mjd0, Mjd0+16, res1,res2,res3)*1e3;
 
@@ -109,7 +109,6 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     Matrix Cy_Moon = PCtemp.sub((int)temp(1,3),(int)temp(1,2));
     Matrix Cz_Moon = PCtemp.sub((int)temp(1,4),(int)temp(1,3));
 
-
     for(i=1;i<=7;i++){
         for(j=1;j<=temp.col;j++){
             temp(1,j) =temp(1,j) + 39;
@@ -117,7 +116,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         Matrix Cx2= PCtemp.sub((int)temp(1,2),(int)temp(1,1));
         Matrix Cy2= PCtemp.sub((int)temp(1,3),(int)temp(1,2));
         Matrix Cz2= PCtemp.sub((int)temp(1,4),(int)temp(1,3));
-         x = Matrix::concat(Cx_Moon,Cx2);
+         x  = Matrix::concat(Cx_Moon,Cx2);
          y  = Matrix::concat(Cy_Moon,Cz2);
          z = Matrix::concat(Cz_Moon,Cy2);
     }
@@ -171,8 +170,8 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
 
     Matrix r_Moon(1,3);
     res1 = x.sub((13*j+13),(13*j+1));
-     res2= y.sub((13*j+13),(13*j+1));
-     res3= z.sub((13*j+13),(13*j+1));
+    res2= y.sub((13*j+13),(13*j+1));
+    res3= z.sub((13*j+13),(13*j+1));
     r_Moon = Cheb3D(Mjd_TDB, 13, Mjd0, Mjd0+4, res1,res2,res3)*1e3;
 
 
@@ -206,6 +205,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         }
     }
     Matrix r_Sun(1,3);
+    res1 = x.sub((11*j+11),(11*j+1));
+    res2= y.sub((11*j+11),(11*j+1));
+    res3= z.sub((11*j+11),(11*j+1));
     r_Sun = Cheb3D(Mjd_TDB, 11, Mjd0, Mjd0+16, res1,res2,res3)*1e3;
 
     n=3;
@@ -453,19 +455,19 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     double EMRAT1 = 1. / (1. + EMRAT);
 
     r_Earth = r_Earth - (r_Moon*EMRAT1);
-    r_Mercury =  (r_Earth-r_Mercury)*-1;
-    r_Venus =   (r_Earth-r_Venus)*-1;
-    r_Mars =  (r_Earth-r_Mars)*-1;
-    r_Jupiter =  (r_Earth-r_Jupiter)*-1;
-    r_Saturn =   (r_Earth-r_Saturn)*-1;
-    r_Uranus =  ( r_Earth-r_Uranus)*-1;
-    r_Neptune = ( r_Earth-r_Neptune)*-1;
-    r_Pluto =  ( r_Earth-r_Pluto)*-1;
-    r_Sun =   (r_Earth-r_Sun)*-1;
+    r_Mercury =  (r_Earth-r_Mercury)*-1.;
+    r_Venus =   (r_Earth-r_Venus)*-1.;
+    r_Mars =  (r_Earth-r_Mars)*-1.;
+    r_Jupiter =  (r_Earth-r_Jupiter)*-1.;
+    r_Saturn =   (r_Earth-r_Saturn)*-1.;
+    r_Uranus =  ( r_Earth-r_Uranus)*-1.;
+    r_Neptune = ( r_Earth-r_Neptune)*-1.;
+    r_Pluto =  ( r_Earth-r_Pluto)*-1.;
+    r_Sun =   (r_Earth-r_Sun)*-1.;
 
     Matrix result2(1,33);
-    result2 = Matrix::concat(r_Mercury,r_Earth);
-    result2 = Matrix::concat(result2,r_Venus);
+    result2 = Matrix::concat(r_Mercury,r_Venus);
+    result2 = Matrix::concat(result2,r_Earth);
     result2 = Matrix::concat(result2,r_Mars);
     result2 = Matrix::concat(result2,r_Jupiter);
     result2 = Matrix::concat(result2,r_Saturn);

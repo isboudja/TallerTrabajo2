@@ -171,7 +171,7 @@ Matrix Matrix::operator/(double scalar) const {
  
 Matrix Matrix::operator*(const Matrix& matrix2)
 {
-    Matrix result(fil, col);
+    Matrix result(this->fil, matrix2.col);
  
     for (int i = 0; i < this->fil ; i++){
         for (int j = 0; j < matrix2.col; j++){
@@ -212,7 +212,7 @@ Matrix Matrix::sub(int i, int j) const{
     Matrix subMatrix(1, newCol);
 
         for (int y = 0; y < newCol; ++y) {
-            subMatrix.matrix[0][y] = matrix[0][j + y];
+            subMatrix.matrix[0][y] = matrix[0][j + y -1];
         }
 
 

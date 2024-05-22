@@ -11,6 +11,7 @@ const double Constants::AU = 149597870700.000000;
 const double Constants::f_Earth = 1 / 298.257223563;
 const double Constants::R_Sun = 696000e3;
 const double Constants::R_Moon = 1738e3;
+
 const double Constants::omega_Earth = 15.04106717866910 / 3600 * Constants::Rad;
 const double Constants::GM_Earth = 3.986e14;
 const double Constants::GM_Sun = 132712440041.939400e9;
