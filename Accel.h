@@ -7,7 +7,7 @@
 
 #include "Matrix.h"
 
-Matrix Accel(double x,double Y);
+Matrix Accel(double x,Matrix &Y);
 
 
 #endif //UNTITLED_ACCEL_H

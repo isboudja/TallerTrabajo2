@@ -16,13 +16,15 @@
 #include "IERS.h"
 #include "globals.h"
 #include "JPL_Eph_DE430.h"
-/*
-Matrix Accel(double x,double Y){
+#include "AccelHarmonic.h"
+#include "AccelPointMass.h"
+
+Matrix Accel(double x,Matrix &Y){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
     AuxParam AuxParam;
     Constants c;
-
+    AuxParam.Mjd_UTC = 4.974611635416653e+04;
     Matrix eopdata(13, 21413);
     FILE *fid = fopen("../texts/eop19620101.txt", "r");
 
@@ -31,24 +33,24 @@ Matrix Accel(double x,double Y){
         exit(EXIT_FAILURE);
     }
     for (int i = 1; i <= 21413; i++) {
-        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &(*globals::matrix)(1, i),
-               &(*globals::matrix)(2, i), &(*globals::matrix)(3, i),
-               &(*globals::matrix)(4, i), &(*globals::matrix)(5, i), &(*globals::matrix)(6, i),
-               &(*globals::matrix)(7, i), &(*globals::matrix)(8, i), &(*globals::matrix)(9, i),
-               &(*globals::matrix)(10, i), &(*globals::matrix)(11, i), &(*globals::matrix)(12, i),
-               &(*globals::matrix)(13, i));
+        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &eopdata(1, i),
+               &eopdata(2, i), &eopdata(3, i),
+               &eopdata(4, i), &eopdata(5, i), &eopdata(6, i),
+               &eopdata(7, i), &eopdata(8, i), &eopdata(9, i),
+               &eopdata(10, i), &eopdata(11, i), &eopdata(12, i),
+               &eopdata(13, i));
     }
 
 
     fclose(fid);
     // Cálculo de los parámetros de tiempo
     Matrix result(1,9);
-    result = IERS(eopdata, AuxParam.Mjd_UTC + x / 86400,'n');
-     x_pole = result(1,1);
+    result = IERS(eopdata, AuxParam.Mjd_UTC + x/86400,'n');
+    x_pole = result(1,1);
     y_pole = result(1,2);
     UT1_UTC = result(1,3);
     LOD = result(1,4);
-     dpsi = result(1,5);
+    dpsi = result(1,5);
     deps=  result(1,6);
     dx_pole=result(1,7) ;
     dy_pole=result(1,8) ;
@@ -68,40 +70,65 @@ Matrix Accel(double x,double Y){
     // Tiempo barycentrico dinamico modificado
     double MJD_TDB = Mjday_TDB(Mjd_TT);
 
-    // Posiciones de los cuerpos celestes
-    double r_Mercury, r_Venus, r_Earth, r_Mars, r_Jupiter, r_Saturn, r_Uranus, r_Neptune, r_Pluto, r_Moon, r_Sun;
-    JPL_Eph_DE430(MJD_TDB);
+    Matrix r_Mercury(1,3), r_Venus(1,3), r_Earth(1,3), r_Mars(1,3), r_Jupiter(1,3), r_Saturn(1,3), r_Uranus(1,3), r_Neptune(1,3), r_Pluto(1,3), r_Moon(1,3), r_Sun(1,3);
+    Matrix result2(1,33);
+    result2 = JPL_Eph_DE430(MJD_TDB);
+    for(int j=1;j<=3;j++){
+        r_Mercury(1,j) = result2(1,j*1);
+        r_Venus(1,j) = result2(1,j+3);
+        r_Earth(1,j) = result2(1,j+6);
+        r_Mars(1,j) = result2(1,j+9);
+        r_Jupiter(1,j) = result2(1,j+12);
+        r_Saturn(1,j) = result2(1,j+15);
+        r_Uranus(1,j) = result2(1,j+18);
+        r_Neptune(1,j) = result2(1,j+21);
+        r_Pluto(1,j) = result2(1,j+24);
+        r_Moon(1,j) = result2(1,j+27);
+        r_Sun(1,j) = result2(1,j+30);
 
+    }
     // Aceleración debida al campo gravitacional armónico
-    Vector3d a = AccelHarmonic(Y.head(3), E, AuxParam.n, AuxParam.m);
-
+    Matrix a(1,1);
+    Matrix r(1,3);
+    Matrix a2(1,3);
+    for(int i=1;i<=3;i++){
+        r(1,i) = Y(1,i);
+        a2(1,i) = 1;
+    }
+    a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
+    a2*a;
+    a2.print();
     // Perturbaciones luni-solares
     if (AuxParam.sun) {
-        a += AccelPointMass(Y.head(3), r_Sun, const.GM_Sun);
+        a = a + AccelPointMass(r, r_Sun, c.GM_Sun);
     }
     if (AuxParam.moon) {
-        a += AccelPointMass(Y.head(3), r_Moon, const.GM_Moon);
+        a = a + AccelPointMass(r, r_Moon, c.GM_Moon);
     }
 
     // Perturbaciones planetarias
     if (AuxParam.planets) {
-        a += AccelPointMass(Y.head(3), r_Mercury, const.GM_Mercury);
-        a += AccelPointMass(Y.head(3), r_Venus, const.GM_Venus);
-        a += AccelPointMass(Y.head(3), r_Mars, const.GM_Mars);
-        a += AccelPointMass(Y.head(3), r_Jupiter, const.GM_Jupiter);
-        a += AccelPointMass(Y.head(3), r_Saturn, const.GM_Saturn);
-        a += AccelPointMass(Y.head(3), r_Uranus, const.GM_Uranus);
-        a += AccelPointMass(Y.head(3), r_Neptune, const.GM_Neptune);
-        a += AccelPointMass(Y.head(3), r_Pluto, const.GM_Pluto);
+        a = a + AccelPointMass(r, r_Mercury, c.GM_Mercury);
+        a = a + AccelPointMass(r, r_Venus, c.GM_Venus);
+        a = a + AccelPointMass(r, r_Mars, c.GM_Mars);
+        a = a + AccelPointMass(r, r_Jupiter, c.GM_Jupiter);
+        a = a + AccelPointMass(r, r_Saturn, c.GM_Saturn);
+        a = a + AccelPointMass(r, r_Uranus, c.GM_Uranus);
+        a = a + AccelPointMass(r, r_Neptune, c.GM_Neptune);
+        a = a + AccelPointMass(r, r_Pluto, c.GM_Pluto);
     }
 
-    Vector6d dY;
-    dY << Y.tail(3), a;
+    Matrix dY(1,4);
+    for(int i=1;i<=3;i++){
+    dY(1,i) = Y(1,i+3);
+    }
+    dY(1,4) = a(1,1);
+    dY.print();
     return dY;
+
 }
 
 
 
 
 
-}*/

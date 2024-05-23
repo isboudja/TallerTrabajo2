@@ -38,6 +38,7 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
     r_bf.print();
     double d = r_bf.norm();
+    d = pow(d,2.);
     double latgc = asin(r_bf(1,3) / d);
     double lon = atan2(r_bf(1,2), r_bf(1,1));
 
@@ -58,14 +59,18 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
     double q3 = 0.;
     double q2 = q3;
     double q1 = q2;
+        double b1;
+        j = 1;
     for(double n=0;n<=n_max;n++) {
-        double b1 = (-gm / pow(d,2)) * pow((r_ref / d),n) * (n + 1);
+        b1 = (-gm / pow(d,2)) * pow((r_ref / d),n ) * (n + 1);
         double b2 = (gm / d) * pow((r_ref / d),n);
         double b3 = (gm / d) * pow((r_ref / d),n);
         for(double m=0;m<=m_max;m++) {
-            q1 = q1 + pnm(1, (n + 1)*(m + 1)) * (Cnm(n + 1, m + 1) * cos(m * lon) + Snm(n + 1, m + 1) * sin(m * lon));
-            q2 = q2 + dpnm(1, (n + 1)*(m + 1)) * (Cnm(n + 1, m + 1) * cos(m * lon) + Snm(n + 1, m + 1) * sin(m * lon));
-            q3 = q3 + m * pnm(1, (n + 1)*(m + 1)) * (Snm(n + 1, m + 1) * cos(m * lon) - Cnm(n + 1, m + 1) * sin(m * lon));
+
+            q1 = q1 + pnm(1, j) * (Cnm(n + 1, m + 1) * cos(m * lon) + Snm(n + 1, m + 1) * sin(m * lon));
+            q2 = q2 + dpnm(1, j) * (Cnm(n + 1, m + 1) * cos(m * lon) + Snm(n + 1, m + 1) * sin(m * lon));
+            q3 = q3 + m * pnm(1, j) * (Snm(n + 1, m + 1) * cos(m * lon) - Cnm(n + 1, m + 1) * sin(m * lon));
+            j++;
         }
         dUdr = dUdr + q1 * b1;
         dUdlatgc = dUdlatgc + q2 * b2;

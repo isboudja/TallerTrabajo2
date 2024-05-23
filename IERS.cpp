@@ -16,7 +16,7 @@ Matrix nexteop(1,13);
 int i;
 if (interp == 'l') {
 int mjd = floor(Mjd_UTC);
-    for (i = 0; i < 13; i++) {
+    for (i = 0; i < eop.col; i++) {
         if(eop(4,i+1)==mjd){
             mjd = i+1;
             break;
@@ -49,8 +49,8 @@ fixf = mfme / 1440.;
 
     preeop.print();
 } else if (interp == 'n') {
-int mjd = floor(Mjd_UTC);
-    for (i = 0; i < 13; i++) {
+    int mjd = floor(Mjd_UTC);
+    for (i = 0; i < eop.col; i++) {
         if(eop(4,i+1)==mjd){
             mjd = i+1;
             break;
@@ -58,7 +58,7 @@ int mjd = floor(Mjd_UTC);
         }
     }
 for (i = 0; i < 13; i++) {
-    preeop(1,i+1) = eop(mjd,i+1);
+    preeop(1,i+1) = eop(i+1,mjd);
 }
 
     Result(1,1)  = preeop(1,5) / Constants::Arcs;

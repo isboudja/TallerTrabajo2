@@ -26,19 +26,13 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         }
     }
 
-    printf("Fila  ");
-    for (m = 0; m < 1020; m++) {
-        printf("%.20lf ", PC(1, m+1)); // Modificar el formato según necesites
-    }
-    printf("\n");
-
 
     fclose(fid);
 
     // Obtener el día juliano
     double JD = Mjd_TDB + 2400000.5;
     double i;
-    for (i = 0; i < 13; i++) {
+    for (i = 0; i < 2285; i++) {
         if(PC(i+1,1)<=JD && JD<=PC(i+1,2)){
             break;
 

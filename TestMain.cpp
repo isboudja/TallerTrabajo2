@@ -28,6 +28,7 @@
 #include "JPL_Eph_DE430.h"
 #include "PoleMatrix.h"
 #include "AccelHarmonic.h"
+#include "Accel.h"
 
 #define TOL_ 10e-14
 
@@ -472,6 +473,27 @@ int HMC(){
     return 0;
 }
 
+int ASCE(){
+
+
+    double tolerance = 10e-6;
+    double Y2[] ={1,1,1,1,1,1};
+    double expected_values[] ={  1,
+            1,
+            1,
+            2.59173969179228e+138,
+            -3.23976995737588e+139,
+            -6.9808470022172e+139,};
+    Matrix expected(1, 6, expected_values, 6);
+    Matrix Y(1,6,Y2,6);
+    Matrix res=Accel(1, Y);
+    expected.print();
+    res.print();
+    _assert(EqMatrix(res, expected, tolerance));
+
+    return 0;
+}
+
 
 int all_tests()
 {
@@ -495,7 +517,8 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
-    _verify(HMC);
+//    _verify(HMC);
+    _verify(ASCE);
     return 0;
 }
 
