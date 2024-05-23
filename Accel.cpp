@@ -14,11 +14,9 @@
 #include "PoleMatrix.h"
 #include "GHAMatrix.h"
 #include "IERS.h"
-#include "globals.h"
-#include "JPL_Eph_DE430.h"
 #include "AccelHarmonic.h"
 #include "AccelPointMass.h"
-
+#include "JPL_Eph_DE430.h"
 Matrix Accel(double x,Matrix &Y){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
@@ -65,65 +63,82 @@ Matrix Accel(double x,Matrix &Y){
     Matrix P = PrecMatrix(c.MJD_J2000, Mjd_TT);
     Matrix N = NutMatrix(Mjd_TT);
     Matrix T = N * P;
-    Matrix E = PoleMatrix(x_pole, y_pole) * GHAMatrix(Mjd_UT1) * T;
-
-    // Tiempo barycentrico dinamico modificado
+    Matrix E = PoleMatrix(x_pole, y_pole) * GHAMatrix(Mjd_UT1) * T;// Tiempo barycentrico dinamico modificado
+    E.print();
     double MJD_TDB = Mjday_TDB(Mjd_TT);
-
-    Matrix r_Mercury(1,3), r_Venus(1,3), r_Earth(1,3), r_Mars(1,3), r_Jupiter(1,3), r_Saturn(1,3), r_Uranus(1,3), r_Neptune(1,3), r_Pluto(1,3), r_Moon(1,3), r_Sun(1,3);
-    Matrix result2(1,33);
-    result2 = JPL_Eph_DE430(MJD_TDB);
+    Matrix r_Mercury2(1,3);
+    Matrix r_Venus2(1,3);
+    Matrix r_Earth2(1,3) ;
+    Matrix r_Mars2(1,3);
+    Matrix r_Jupiter2(1,3);
+    Matrix r_Saturn2(1,3);
+    Matrix r_Uranus2(1,3);
+    Matrix r_Neptune2(1,3);
+    Matrix r_Pluto2(1,3);
+    Matrix r_Moon2(1,3);
+    Matrix r_Sun2(1,3);
+    Matrix  res = JPL_Eph_DE430(MJD_TDB);
     for(int j=1;j<=3;j++){
-        r_Mercury(1,j) = result2(1,j*1);
-        r_Venus(1,j) = result2(1,j+3);
-        r_Earth(1,j) = result2(1,j+6);
-        r_Mars(1,j) = result2(1,j+9);
-        r_Jupiter(1,j) = result2(1,j+12);
-        r_Saturn(1,j) = result2(1,j+15);
-        r_Uranus(1,j) = result2(1,j+18);
-        r_Neptune(1,j) = result2(1,j+21);
-        r_Pluto(1,j) = result2(1,j+24);
-        r_Moon(1,j) = result2(1,j+27);
-        r_Sun(1,j) = result2(1,j+30);
+        r_Mercury2(1,j) = res(1,j*1);
+        r_Venus2(1,j) = res(1,j+3);
+        r_Earth2(1,j) = res(1,j+6);
+        r_Mars2(1,j) = res(1,j+9);
+        r_Jupiter2(1,j) = res(1,j+12);
+        r_Saturn2(1,j) = res(1,j+15);
+        r_Uranus2(1,j) = res(1,j+18);
+        r_Neptune2(1,j) = res(1,j+21);
+        r_Pluto2(1,j) = res(1,j+24);
+        r_Moon2(1,j) = res(1,j+27);
+        r_Sun2(1,j) = res(1,j+30);
 
     }
     // Aceleración debida al campo gravitacional armónico
     Matrix a(1,1);
-    Matrix r(1,3);
+    Matrix r(3,1);
     Matrix a2(1,3);
+
     for(int i=1;i<=3;i++){
-        r(1,i) = Y(1,i);
+        r(i,1) = Y(1,i);
         a2(1,i) = 1;
     }
+    AuxParam.n = 20;
+    AuxParam.m = 20;
+    AuxParam.sun     = 1;
+    AuxParam.moon    = 1;
+    AuxParam.planets = 1;
     a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
-    a2*a;
-    a2.print();
+
+    a.print();
+    a = a*a2;
+    a.print();
+
     // Perturbaciones luni-solares
     if (AuxParam.sun) {
-        a = a + AccelPointMass(r, r_Sun, c.GM_Sun);
+        a = a + AccelPointMass(r, r_Sun2, c.GM_Sun);
     }
     if (AuxParam.moon) {
-        a = a + AccelPointMass(r, r_Moon, c.GM_Moon);
+        a = a + AccelPointMass(r, r_Moon2, c.GM_Moon);
     }
 
     // Perturbaciones planetarias
     if (AuxParam.planets) {
-        a = a + AccelPointMass(r, r_Mercury, c.GM_Mercury);
-        a = a + AccelPointMass(r, r_Venus, c.GM_Venus);
-        a = a + AccelPointMass(r, r_Mars, c.GM_Mars);
-        a = a + AccelPointMass(r, r_Jupiter, c.GM_Jupiter);
-        a = a + AccelPointMass(r, r_Saturn, c.GM_Saturn);
-        a = a + AccelPointMass(r, r_Uranus, c.GM_Uranus);
-        a = a + AccelPointMass(r, r_Neptune, c.GM_Neptune);
-        a = a + AccelPointMass(r, r_Pluto, c.GM_Pluto);
+        a = a + AccelPointMass(r, r_Mercury2, c.GM_Mercury);
+        a = a + AccelPointMass(r, r_Venus2, c.GM_Venus);
+        a = a + AccelPointMass(r, r_Mars2, c.GM_Mars);
+        a = a + AccelPointMass(r, r_Jupiter2, c.GM_Jupiter);
+        a = a + AccelPointMass(r, r_Saturn2, c.GM_Saturn);
+        a = a + AccelPointMass(r, r_Uranus2, c.GM_Uranus);
+        a = a + AccelPointMass(r, r_Neptune2, c.GM_Neptune);
+        a = a + AccelPointMass(r, r_Pluto2, c.GM_Pluto);
     }
 
-    Matrix dY(1,4);
+    Matrix dY(1,6);
     for(int i=1;i<=3;i++){
     dY(1,i) = Y(1,i+3);
     }
     dY(1,4) = a(1,1);
-    dY.print();
+    dY(1,4) = a(1,2);
+    dY(1,4) = a(1,3);
     return dY;
 
 }

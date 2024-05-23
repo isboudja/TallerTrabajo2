@@ -32,7 +32,7 @@ Matrix::Matrix(int fil, int col, double v[], int n)
                 matrix[i][j] = 0;
         }
 }
- 
+
 Matrix::Matrix(const Matrix& m)
 {
     *this = m;
@@ -66,10 +66,12 @@ void Matrix::initMatrix()
         for (int j = 0; j < col; j++)
             matrix[i][j] = 0.0;
 }
- 
+
 Matrix& Matrix::operator=(const Matrix& matrix2)
 {
+
         if (this != &matrix2) {
+
             this->fil = matrix2.fil;
             this->col = matrix2.col;
             for (int i = 0; i < fil; i++) {
@@ -172,16 +174,17 @@ Matrix Matrix::operator/(double scalar) const {
 Matrix Matrix::operator*(const Matrix& matrix2)
 {
     Matrix result(this->fil, matrix2.col);
- 
-    for (int i = 0; i < this->fil ; i++){
-        for (int j = 0; j < matrix2.col; j++){
-            result.matrix[i][j] = 0;
-            for (int k = 0; k < this->col; k++){
-                result.matrix[i][j] = result.matrix[i][j] + this->matrix[i][k] * matrix2.matrix[k][j];
+
+    // Realizar la multiplicación de matrices
+    for (int i = 0; i < this->fil; i++) {
+        for (int j = 0; j < matrix2.col; j++) {
+            result.matrix[i][j] = 0; // Inicializar el elemento resultante a 0
+            for (int k = 0; k < this->col; k++) {
+                result.matrix[i][j] += this->matrix[i][k] * matrix2.matrix[k][j];
             }
         }
     }
- 
+
     return result;
 }
  

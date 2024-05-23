@@ -442,10 +442,8 @@ int JPL(){
     };
     Matrix expected(1, 33, expected_values, 33);
     expected.print();
-
     Matrix result(1,33);
     result = JPL_Eph_DE430(33264.0);
-
     result.print();
     //-2.1528481871834e+23
     _assert(EqMatrix(result, expected, tolerance));
@@ -517,7 +515,7 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
-//    _verify(HMC);
+  // _verify(HMC);
     _verify(ASCE);
     return 0;
 }

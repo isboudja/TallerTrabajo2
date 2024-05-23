@@ -92,7 +92,6 @@ Matrix Legendre(int n, int m, double fi) {
         result(1,h+1) = dpnm(1, g + 1);
         g++;
     }
-    result.print();
     return result;
 
 }

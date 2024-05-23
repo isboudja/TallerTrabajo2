@@ -32,15 +32,12 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
     double r_ref = 6378.1363e3;
     double gm = 398600.4415e9;
-    E.print();
-    r.print();
-    Matrix r_bf = E * r;
-
+    Matrix r_bf =  r*E;
     r_bf.print();
     double d = r_bf.norm();
     d = pow(d,2.);
-    double latgc = asin(r_bf(1,3) / d);
-    double lon = atan2(r_bf(1,2), r_bf(1,1));
+    double latgc = asin(r_bf(3,1) / d);
+    double lon = atan2(r_bf(2,1), r_bf(1,1));
 
      Matrix Leg = Legendre(n_max, m_max, latgc);
      Matrix pnm(1,(n_max+1)*(m_max+1));
@@ -82,9 +79,9 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
     double r2xy = pow(r_bf(1, 1),2) + pow(r_bf(2, 1),2);
 
-    double ax = (1. / d * dUdr - r_bf(1,3) / (pow(d,2) * sqrt(r2xy)) * dUdlatgc) * r_bf(1,1) - (1. / r2xy * dUdlon) * r_bf(1,2);
-    double ay = (1. / d * dUdr - r_bf(1,3) / (pow(d,2) * sqrt(r2xy)) * dUdlatgc) * r_bf(1,2) + (1. / r2xy * dUdlon) * r_bf(1,1);
-    double az = 1. / d * dUdr * r_bf(1,3) + sqrt(r2xy) / pow(d,2) * dUdlatgc;
+    double ax = (1. / d * dUdr - r_bf(3,1) / (pow(d,2) * sqrt(r2xy)) * dUdlatgc) * r_bf(1,1) - (1. / r2xy * dUdlon) * r_bf(2,1);
+    double ay = (1. / d * dUdr - r_bf(3,1) / (pow(d,2) * sqrt(r2xy)) * dUdlatgc) * r_bf(2,1) + (1. / r2xy * dUdlon) * r_bf(1,1);
+    double az = 1. / d * dUdr * r_bf(3,1) + sqrt(r2xy) / pow(d,2) * dUdlatgc;
 
     a_bf(1,1) = ax;
     a_bf(2,1) = ay;
@@ -96,8 +93,10 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
     for(int i=1;i<=3;i++){
         E2(1,i) = E(i,1);
     }
+    a_bf.print();
 
     Matrix a = E2*a_bf;
+    a.print();
     return a;
 }
 

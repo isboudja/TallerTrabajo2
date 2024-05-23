@@ -15,7 +15,7 @@ class Matrix
         int col;
         Matrix(const Matrix& m);
         ~Matrix();
- 
+
         Matrix& operator=(const Matrix& matrix2);
         Matrix  operator+(const Matrix& matrix2) const;
         Matrix  operator-(const Matrix& matrix2) const;

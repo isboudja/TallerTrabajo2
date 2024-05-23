@@ -9,11 +9,12 @@
 
 
 Matrix JPL_Eph_DE430(double Mjd_TDB) {
-    // Definición del vector de resultado
-   Matrix result(11, 1.0); // r_Mercury, r_Venus, r_Earth, r_Mars, r_Jupiter, r_Saturn, r_Uranus, r_Neptune, r_Pluto, r_Moon, r_Sun
 
     FILE *fid = fopen("../texts/DE430Coeff.txt","r");
     Matrix PC(2285,1020);
+    Matrix x(1,100);
+    Matrix y(1,100);
+    Matrix z(1,100);
     if(fid==nullptr){
         printf("error2");
         exit(EXIT_FAILURE);
@@ -71,9 +72,9 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     Matrix Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3));
 
 
-        Matrix x = Matrix::concat(Cx_Earth,Cx);
-        Matrix y  = Matrix::concat(Cy_Earth,Cz);
-        Matrix z = Matrix::concat(Cz_Earth,Cy);
+     x = Matrix::concat(Cx_Earth,Cx);
+     y  = Matrix::concat(Cy_Earth,Cz);
+     z = Matrix::concat(Cz_Earth,Cy);
 
     double Mjd0;
     if (0<=dt && dt<=16) {
@@ -415,7 +416,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
         Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
         Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
         x = Matrix::concat(Cx_Nutations,Cx);
-        y  = Matrix::concat(Cy_Nutations,Cz);
+        y  = Matrix::concat(Cy_Nutations,Cy);
     }
     if (0<=dt && dt<=8){
         j=0;
@@ -443,7 +444,52 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     Matrix res32(1,10);
     Nutations = Cheb3D(Mjd_TDB, 10, Mjd0, Mjd0+8, res1,res2,res32);
 
+    n=899;
+    j=1;
+    while(n<=929){
+        temp(1,j) = n;
+        j++;
+        n += 10;
+    }
+    Matrix Cx_Librations =    PCtemp.sub((int)temp(1,2),(int)temp(1,1));
+    Matrix Cy_Librations= PCtemp.sub((int)temp(1,3),(int)temp(1,2));
+    Matrix Cz_Librations = PCtemp.sub((int)temp(1,4),(int)temp(1,3));
+    for(i=1;i<=3;i++){
+        for(j=1;j<=temp.col;j++){
+            temp(1,j) += 30;
+        }
+        Cx= PCtemp.sub((int)temp(1,2),(int)temp(1,1)-1);
+        Cy= PCtemp.sub((int)temp(1,3),(int)temp(1,2)-1);
+        Cz= PCtemp.sub((int)temp(1,4),(int)temp(1,3)-1);
+        x = Matrix::concat(Cx_Librations,Cx);
+        y  = Matrix::concat(Cy_Librations,Cy);
+        z =  Matrix::concat(Cz_Librations,Cz);
+    }
+    if (0<=dt && dt<=8){
+        j=0;
+        Mjd0 = t1;
+    }
+    else{if(8<dt && dt<=16){
+            j=1;
+            Mjd0 = t1+8*j;
+        }
+        else{if (16<dt && dt<=24){
+                j=2;
+                Mjd0 = t1+8*j;
+            }
+            else{if(24<dt && dt<=32){
+                    j=3;
+                    Mjd0 = t1+8*j;
+                }
+            }
+        }
+    }
+    Matrix Librations(1,3);
+    res1 = x.sub((10*j+10),(10*j+1));
+    res2= y.sub((10*j+10),(10*j+1));
+    res3 = z.sub((10*j+10),(10*j+1));
 
+    Librations = Cheb3D(Mjd_TDB, 10, Mjd0, Mjd0+8, res1,res2,res3);
 
     double EMRAT = 81.30056907419062;
     double EMRAT1 = 1. / (1. + EMRAT);
@@ -470,9 +516,5 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     result2 = Matrix::concat(result2,r_Pluto);
     result2 = Matrix::concat(result2,r_Moon);
     result2 = Matrix::concat(result2,r_Sun);
-
-    result2.print();
-
-
     return result2;
 }
