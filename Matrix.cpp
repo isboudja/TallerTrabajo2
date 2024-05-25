@@ -241,3 +241,15 @@ Matrix Matrix::concat(const Matrix& mat1, const Matrix& mat2){
     return result;
 }
 
+Matrix Matrix::transpose() const {
+    Matrix result(col, fil); // Crear una nueva matriz con filas y columnas intercambiadas
+
+    for (int i = 0; i < fil; ++i) {
+        for (int j = 0; j < col; ++j) {
+            result.matrix[j][i] = matrix[i][j]; // Asignar los elementos de la matriz original a la transpuesta
+        }
+    }
+
+    return result;
+}
+

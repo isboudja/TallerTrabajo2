@@ -8,7 +8,7 @@
 #include "Matrix.h"
 #include "math.h"
 #include "sign_.h"
-/*
+
 struct DE_STATE {
     int DE_INIT = 1;
     int DE_DONE = 2;
@@ -160,9 +160,9 @@ Matrix DEInteg(double (*func)(double, Matrix), double t, double tout, double rel
     5394.06894044333
     -2365.21290573999
     -7061.84481373379
-
+*/
 
 
 
     return y;
-}*/
+}

@@ -93,7 +93,7 @@ Matrix Accel(double x,Matrix &Y){
 
     }
     // Aceleración debida al campo gravitacional armónico
-    Matrix a(1,1);
+
     Matrix r(3,1);
     Matrix a2(1,3);
 
@@ -106,30 +106,28 @@ Matrix Accel(double x,Matrix &Y){
     AuxParam.sun     = 1;
     AuxParam.moon    = 1;
     AuxParam.planets = 1;
-    a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
-
-    a.print();
-    a = a*a2;
+    Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
+    Matrix r2 = r.transpose();
     a.print();
 
     // Perturbaciones luni-solares
     if (AuxParam.sun) {
-        a = a + AccelPointMass(r, r_Sun2, c.GM_Sun);
+        a = a + AccelPointMass(r2, r_Sun2, c.GM_Sun);
     }
     if (AuxParam.moon) {
-        a = a + AccelPointMass(r, r_Moon2, c.GM_Moon);
+        a = a + AccelPointMass(r2, r_Moon2, c.GM_Moon);
     }
 
     // Perturbaciones planetarias
     if (AuxParam.planets) {
-        a = a + AccelPointMass(r, r_Mercury2, c.GM_Mercury);
-        a = a + AccelPointMass(r, r_Venus2, c.GM_Venus);
-        a = a + AccelPointMass(r, r_Mars2, c.GM_Mars);
-        a = a + AccelPointMass(r, r_Jupiter2, c.GM_Jupiter);
-        a = a + AccelPointMass(r, r_Saturn2, c.GM_Saturn);
-        a = a + AccelPointMass(r, r_Uranus2, c.GM_Uranus);
-        a = a + AccelPointMass(r, r_Neptune2, c.GM_Neptune);
-        a = a + AccelPointMass(r, r_Pluto2, c.GM_Pluto);
+        a = a + AccelPointMass(r2, r_Mercury2, c.GM_Mercury);
+        a = a + AccelPointMass(r2, r_Venus2, c.GM_Venus);
+        a = a + AccelPointMass(r2, r_Mars2, c.GM_Mars);
+        a = a + AccelPointMass(r2, r_Jupiter2, c.GM_Jupiter);
+        a = a + AccelPointMass(r2, r_Saturn2, c.GM_Saturn);
+        a = a + AccelPointMass(r2, r_Uranus2, c.GM_Uranus);
+        a = a + AccelPointMass(r2, r_Neptune2, c.GM_Neptune);
+        a = a + AccelPointMass(r2, r_Pluto2, c.GM_Pluto);
     }
 
     Matrix dY(1,6);
@@ -137,8 +135,8 @@ Matrix Accel(double x,Matrix &Y){
     dY(1,i) = Y(1,i+3);
     }
     dY(1,4) = a(1,1);
-    dY(1,4) = a(1,2);
-    dY(1,4) = a(1,3);
+    dY(1,5) = a(1,2);
+    dY(1,6) = a(1,3);
     return dY;
 
 }

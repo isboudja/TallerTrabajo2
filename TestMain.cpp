@@ -181,7 +181,6 @@ int Legend(){
             2.822379484686224 ,  2.092581832544772 , -1.629501555238869};
     Matrix expected(1, 18, expected_values, 18);
     result.print();
-    expected.print();
     _assert(EqMatrix(result, expected, tolerance));
 
     return 0;
