@@ -9,35 +9,38 @@
 #include "SAT_Const.h"
 #include "Mjday.h"
 
-Matrix *globals::matrix;
-Matrix *globals::matrix2;
+Matrix *globals::eopdata;
+Matrix *globals::obs;
+Matrix *globals::Rs;
 
-void globals::eop1962(int c) {
-    globals::matrix  = new Matrix(13,c);
-    FILE *fid = fopen("../texts/eop19620101.txt","r");
+void globals::eop1962(){
+    globals::eopdata = new Matrix(13,21413);
+    FILE *fid = fopen("../texts/eop19620101.txt", "r");
 
-            if(fid==nullptr){
-                printf("error globals");
-                exit(EXIT_FAILURE);
-            }
-            for(int i=1;i<=c;i++){
-                fscanf(fid,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",&(*globals::matrix)(1,i),&(*globals::matrix)(2,i),&(*globals::matrix)(3,i),
-                                                                                                                                   &(*globals::matrix)(4,i),&(*globals::matrix)(5,i),&(*globals::matrix)(6,i)
-                                                                                                                                                                                    ,&(*globals::matrix)(7,i),&(*globals::matrix)(8,i),&(*globals::matrix)(9,i)
-                                                                                                                                                                                                                                        ,&(*globals::matrix)(10,i),&(*globals::matrix)(11,i),&(*globals::matrix)(12,i),&(*globals::matrix)(13,i));
-            }
+    if (fid == nullptr) {
+        printf("error globals");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 1; i <= 21413; i++) {
+        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &globals::eopdata(1, i),
+               &globals::eopdata(2, i), &globals::eopdata(3, i),
+               &globals::eopdata(4, i), &globals::eopdata(5, i), &globals::eopdata(6, i),
+               &globals::eopdata(7, i), &globals::eopdata(8, i), &globals::eopdata(9, i),
+               &globals::eopdata(10, i), &globals::eopdata(11, i), &globals::eopdata(12, i),
+               &globals::eopdata(13, i));
+    }
 
 
     fclose(fid);
 
 }
 
+void globals::GEOS3(int nobs) {
 
-
-void globals::GEOS3(int c) {
-    FILE *fid = fopen("../texts/GEOS3.txt","r");
-    Matrix obs(c,4),Rs(1,3);
-    double Y;
+    FILE *fid2 = fopen("../texts/GEOS3.txt", "r");
+    globals::obs = new Matrix(nobs, 4);
+    globals::Rs = new Matrix(nobs, 4);
+    double y;
     double M;
     double d;
     double H;
@@ -46,23 +49,40 @@ void globals::GEOS3(int c) {
     double az;
     double el;
     double Dist;
-    double Cnm[352][362];
-    if(fid==nullptr){
+    double UT1_TAI;
+    double UTC_GPS;
+    double UT1_GPS;
+    double TT_UTC;
+    double GPS_UTC;
+    double x_pole;
+    double y_pole;
+    double UT1_UTC;
+    double LOD;
+    double dpsi;
+    double deps;
+    double dx_pole;
+    double dy_pole;
+    double TAI_UTC;
+    if (fid2 == nullptr) {
         printf("error");
         exit(EXIT_FAILURE);
     }
     int n;
     int m;
-    for (n=0;n<=46;n++){
-            fscanf(fid, "%lf%lf%lf%lf%lf%lf%lf%lf%lf",&Y,&M,&d,&H,&min,&s,&az,&el,&Dist);
-            obs(n,1) = Mjday(Y,M,d,H,m,s);
-            obs(n,2) = Constants::Rad*az;
-            obs(n,3) = Constants::Rad*el;
-            obs(n,4) = 1e3*Dist;
+    int ii;
+    int i;
+    int j;
+    int l;
+    for (n = 0; n < 46; n++) {
+        fscanf(fid2, "%lf%lf%lf%lf%lf%lf%lf%lf%lf", &y, &M, &d, &H, &min, &s, &az, &el, &Dist);
+        obs(n+1, 1) = Mjday(y, M, d, H, m, s);
+        obs(n+1, 2) = Constants::Rad * az;
+        obs(n+1, 3) = Constants::Rad * el;
+        obs(n+1, 4) = 1e3 * Dist;
 
     }
 
-    fclose(fid);
+    fclose(fid2);
 
 }
 /*

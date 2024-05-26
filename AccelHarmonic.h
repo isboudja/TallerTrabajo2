@@ -8,7 +8,7 @@
 
 #include "Matrix.h"
 
-Matrix AccelHarmonic(Matrix &r, Matrix &E, double n_max, double m_max);
+Matrix AccelHarmonic(Matrix &r, Matrix &E, double n_max, double m_max,Matrix &Snm,Matrix &Cnm);
 
 
 #endif //UNTITLED_ACCELHARMONIC_H

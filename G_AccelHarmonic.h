@@ -7,7 +7,7 @@
 
 #include "Matrix.h"
 
-Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max);
+Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max,Matrix &Snm,Matrix &Cnm);
 
 
 #endif //UNTITLED_G_ACCELHARMONIC_H

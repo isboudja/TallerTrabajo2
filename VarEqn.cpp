@@ -16,29 +16,11 @@
 #include "G_AccelHarmonic.h"
 
 
-Matrix VarEqn(double x,Matrix &yPhi){
+Matrix VarEqn(double x,Matrix &yPhi,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC){
 
 AuxParam AuxParam;
 Constants c;
 AuxParam.Mjd_UTC = 4.974611635416653e+04;
-Matrix eopdata(13, 21413);
-FILE *fid = fopen("../texts/eop19620101.txt", "r");
-
-if (fid == nullptr) {
-    printf("error globals");
-    exit(EXIT_FAILURE);
-}
-for (int i = 1; i <= 21413; i++) {
-    fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &eopdata(1, i),
-    &eopdata(2, i), &eopdata(3, i),
-    &eopdata(4, i), &eopdata(5, i), &eopdata(6, i),
-    &eopdata(7, i), &eopdata(8, i), &eopdata(9, i),
-    &eopdata(10, i), &eopdata(11, i), &eopdata(12, i),
-    &eopdata(13, i));
-}
-
-
-fclose(fid);
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
     AuxParam.n = 20;
@@ -91,8 +73,8 @@ fclose(fid);
         Phi(6,j) = yPhi(6*j+6,1);
     }
 
-    Matrix a = AccelHarmonic ( r, E, AuxParam.n, AuxParam.m );
-    Matrix G = G_AccelHarmonic ( r, E, AuxParam.n, AuxParam.m );
+    Matrix a = AccelHarmonic ( r, E, AuxParam.n, AuxParam.m,Snm,Cnm);
+    Matrix G = G_AccelHarmonic ( r, E, AuxParam.n, AuxParam.m ,Snm,Cnm);
 
 
     for (i=1;i<=3;i++){

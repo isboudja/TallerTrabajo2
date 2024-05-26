@@ -7,29 +7,11 @@
 #include "SAT_Const.h"
 #include "Legendre.h"
 
-Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
+Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max,Matrix &Snm,Matrix &Cnm) {
 
-    FILE *fid = fopen("../texts/GGM03S.txt","r");
-    Matrix Cnm(181,181);
-    Matrix Snm(181,181);
-    Matrix temp(1,6);
-    Matrix a_bf(1,3);
-    double c;
-    if(fid==nullptr){
-        printf("error");
-        exit(EXIT_FAILURE);
-    }
     int n;
-    int m;
-    for (n=0;n<=180;n++){
-        for (m=0;m<=n;m++) {
-            fscanf(fid, "%d%d%lf%lf%lf%lf",&c,&c,&temp(1,3),&temp(1,4),&temp(1,5),&temp(1,6));
-            Cnm(n+1,m+1) = temp(1,3);
-            Snm(n+1,m+1) = temp(1,4);
-        }
-    }
     Constants constants;
-
+    Matrix a_bf(1,3);
     double r_ref = 6378.1363e3;
     double gm = 398600.4415e9;
     Matrix r_bf =  E*r;

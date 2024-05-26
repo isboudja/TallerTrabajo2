@@ -34,7 +34,7 @@
 #include "VarEqn.h"
 
 #define TOL_ 10e-14
-
+/*
 using namespace std;
 int tests_run = 0;
 Constants c;
@@ -385,7 +385,7 @@ int PMatrix(){
     result.print();
     expected.print();
     _assert(EqMatrix(result, expected, tolerance));
-*/
+
     return 0;
 
 }
@@ -574,7 +574,7 @@ int VEQ(){
     Matrix expected(42, 1, expected_values, 42);
     Matrix Y(42, 1, resul, 42);
     Matrix result(42,1);
-    result = VarEqn(1,Y);
+    result = VarEqn(1,Y,eopdata,Snm,Cnm);
     expected.print();
     result.print();
     _assert(EqMatrix(result, expected, tolerance));

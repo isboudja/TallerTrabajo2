@@ -18,7 +18,7 @@ struct DE_STATE {
     int DE_INVPARAM = 6;
 };
 
-void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double relerr, double abserr, int n_eqn, Matrix &y) {
+void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &), double t, double tout, double relerr, double abserr, int n_eqn, Matrix &y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC) {
     double twou = 2 * std::numeric_limits<double>::epsilon();
     double fouru = 4 * std::numeric_limits<double>::epsilon();
     bool nornd;
@@ -197,7 +197,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
 
     if (!PermitTOUT && (fabs(tout - x) < fouru * fabs(x))){
         h = tout - x;
-        Dy = func(x,yy);
+        Dy = func(x,yy,eopdata,Snm,Cnm,PC);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
@@ -247,7 +247,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
 
 
     if(start){
-        Dy = func(x,y);
+        Dy = func(x,y,eopdata,Snm,Cnm,PC);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
@@ -415,7 +415,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
         xold = x;
         x = x + h;
          absh = abs(h);
-        Dy = func(x,p);
+        Dy = func(x,p,eopdata,Snm,Cnm,PC);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
@@ -533,7 +533,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
     phi(l,16) = (y(l,1) - p(l,1)) - rho2;
     }
     }
-        Dy = func(x,yy);
+        Dy = func(x,yy,eopdata,Snm,Cnm,PC);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }

@@ -8,28 +8,13 @@
 #include "Cheb3D.h"
 
 
-Matrix JPL_Eph_DE430(double Mjd_TDB) {
+Matrix JPL_Eph_DE430(double Mjd_TDB,Matrix &PC) {
 
-    FILE *fid = fopen("../texts/DE430Coeff.txt","r");
-    Matrix PC(2285,1020);
     Matrix x(1,100);
-    Matrix y(1,100);
     Matrix z(1,100);
-    if(fid==nullptr){
-        printf("error2");
-        exit(EXIT_FAILURE);
-    }
+    Matrix y(1,100);
     int n;
     int m;
-    for (n=1;n<=2285;n++){
-        for (m=1;m<=1020;m++) {
-            fscanf(fid, "%lf,",&PC(n,m));
-        }
-    }
-
-
-    fclose(fid);
-
     // Obtener el día juliano
     double JD = Mjd_TDB + 2400000.5;
     double i;

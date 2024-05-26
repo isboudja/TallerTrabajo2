@@ -17,31 +17,14 @@
 #include "AccelHarmonic.h"
 #include "AccelPointMass.h"
 #include "JPL_Eph_DE430.h"
-Matrix Accel(double x,Matrix &Y){
+Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
     AuxParam AuxParam;
     Constants c;
     AuxParam.Mjd_UTC = 4.974611635416653e+04;
 
-    Matrix eopdata(13, 21413);
-    FILE *fid = fopen("../texts/eop19620101.txt", "r");
 
-    if (fid == nullptr) {
-        printf("error globals");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 1; i <= 21413; i++) {
-        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &eopdata(1, i),
-               &eopdata(2, i), &eopdata(3, i),
-               &eopdata(4, i), &eopdata(5, i), &eopdata(6, i),
-               &eopdata(7, i), &eopdata(8, i), &eopdata(9, i),
-               &eopdata(10, i), &eopdata(11, i), &eopdata(12, i),
-               &eopdata(13, i));
-    }
-
-
-    fclose(fid);
     // Cálculo de los parámetros de tiempo
 
     Matrix result(1,9);
@@ -78,7 +61,7 @@ Matrix Accel(double x,Matrix &Y){
     Matrix r_Pluto2(1,3);
     Matrix r_Moon2(1,3);
     Matrix r_Sun2(1,3);
-    Matrix  res = JPL_Eph_DE430(MJD_TDB);
+    Matrix  res = JPL_Eph_DE430(MJD_TDB,PC);
     for(int j=1;j<=3;j++){
         r_Mercury2(1,j) = res(1,j*1);
         r_Venus2(1,j) = res(1,j+3);
@@ -107,7 +90,7 @@ Matrix Accel(double x,Matrix &Y){
     AuxParam.sun     = 1;
     AuxParam.moon    = 1;
     AuxParam.planets = 1;
-    Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
+    Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m,Snm,Cnm);
     Matrix r2 = r.transpose();
 
 

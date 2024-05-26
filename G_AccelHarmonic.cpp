@@ -5,7 +5,7 @@
 #include "G_AccelHarmonic.h"
 #include "AccelHarmonic.h"
 
-Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max) {
+Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max,Matrix &Snm,Matrix &Cnm) {
     double d = 1.0;   // Position increment [m]
     Matrix G(3, 3);
     Matrix dr(3, 1.0);
@@ -33,8 +33,8 @@ Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max) {
 
         // Acceleration difference
 
-        accel_plus = AccelHarmonic(r_plus_dr, U, n_max, m_max);
-        accel_minus = AccelHarmonic(r_minus_dr, U, n_max, m_max);
+        accel_plus = AccelHarmonic(r_plus_dr, U, n_max, m_max,Snm,Cnm);
+        accel_minus = AccelHarmonic(r_minus_dr, U, n_max, m_max,Snm,Cnm);
 
         for (int j = 0; j < 3; ++j) {
             da(j+1,1) = (accel_plus(1,j+1) - accel_minus(1,j+1)) / d;
@@ -45,6 +45,5 @@ Matrix G_AccelHarmonic(Matrix& r, Matrix& U, int n_max, int m_max) {
             G(j+1,i+1) = da(j+1,1);
         }
     }
-    G.print();
     return G;
 }

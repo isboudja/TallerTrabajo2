@@ -11,14 +11,15 @@
 
 class globals {
 public:
-    static Matrix *matrix;
-    static Matrix *matrix2;
+    static Matrix *eopdata;
+    static Matrix *obs;
+    static Matrix *Rs;
     static Matrix *Cnm;
     static Matrix *Snm;
     static Matrix *temp;
-    static void eop1962(int c);
-    static void GEOS3(int c);
-    static void GGM(int c);
+    static void eop1962();
+    static void GEOS3(int nobs);
+    static void GGM();
     static void DE430();
 
 };

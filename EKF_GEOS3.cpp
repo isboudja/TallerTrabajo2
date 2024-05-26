@@ -28,73 +28,50 @@ int main() {
     // Carga de archivos
     // Código para cargar archivos GGM03S.txt, eop19620101.txt, y GEOS3.txt
 
-    Matrix eopdata(13, 21413);
-    FILE *fid = fopen("../texts/eop19620101.txt", "r");
 
-    if (fid == nullptr) {
-        printf("error globals");
-        exit(EXIT_FAILURE);
-    }
-    for (int i = 1; i <= 21413; i++) {
-        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &eopdata(1, i),
-               &eopdata(2, i), &eopdata(3, i),
-               &eopdata(4, i), &eopdata(5, i), &eopdata(6, i),
-               &eopdata(7, i), &eopdata(8, i), &eopdata(9, i),
-               &eopdata(10, i), &eopdata(11, i), &eopdata(12, i),
-               &eopdata(13, i));
-    }
-
-
-    fclose(fid);
 
     AuxParam auxParam;
     int nobs = 46;
 
-    FILE *fid2 = fopen("../texts/GEOS3.txt", "r");
-    Matrix obs(nobs, 4), Rs(1, 3);
-    double y;
-    double M;
-    double d;
-    double H;
-    double min;
-    double s;
-    double az;
-    double el;
-    double Dist;
-    double UT1_TAI;
-    double UTC_GPS;
-    double UT1_GPS;
-    double TT_UTC;
-    double GPS_UTC;
-    double x_pole;
-    double y_pole;
-    double UT1_UTC;
-    double LOD;
-    double dpsi;
-    double deps;
-    double dx_pole;
-    double dy_pole;
-    double TAI_UTC;
-    if (fid == nullptr) {
+
+
+
+    FILE *fid3 = fopen("../texts/GGM03S.txt","r");
+    Matrix Cnm(181,181);
+    Matrix Snm(181,181);
+    Matrix temp(1,6);
+    double c;
+    if(fid3==nullptr){
         printf("error");
         exit(EXIT_FAILURE);
     }
-    int n;
-    int m;
-    int ii;
-    int i;
-    int j;
-    int l;
-    for (n = 0; n < 46; n++) {
-        fscanf(fid2, "%lf%lf%lf%lf%lf%lf%lf%lf%lf", &y, &M, &d, &H, &min, &s, &az, &el, &Dist);
-        obs(n+1, 1) = Mjday(y, M, d, H, m, s);
-        obs(n+1, 2) = Constants::Rad * az;
-        obs(n+1, 3) = Constants::Rad * el;
-        obs(n+1, 4) = 1e3 * Dist;
 
+    for (n=0;n<=180;n++){
+        for (m=0;m<=n;m++) {
+            fscanf(fid3, "%d%d%lf%lf%lf%lf",&c,&c,&temp(1,3),&temp(1,4),&temp(1,5),&temp(1,6));
+            Cnm(n+1,m+1) = temp(1,3);
+            Snm(n+1,m+1) = temp(1,4);
+        }
     }
 
-    fclose(fid2);
+    fclose(fid3);
+
+    FILE *fid4 = fopen("../texts/DE430Coeff.txt","r");
+    Matrix PC(2285,1020);
+
+    if(fid4==nullptr){
+        printf("error2");
+        exit(EXIT_FAILURE);
+    }
+
+    for (n=1;n<=2285;n++){
+        for (m=1;m<=1020;m++) {
+            fscanf(fid4, "%lf,",&PC(n,m));
+        }
+    }
+
+
+    fclose(fid4);
 
     double sigma_range = 92.5;          // [m]
     double sigma_az = 0.0224 * Constants::Rad; // [rad]
@@ -136,7 +113,7 @@ int main() {
 
     double n_eqn = 6;
     Matrix Y(6,1);
-    DEInteg(Accel,0,-(obs(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr);
+    DEInteg(Accel,0,-(obs(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr,eopdata,Snm,Cnm,PC);
     Y = Y0_apr;
     double gd = -(obs(9,1)-Mjd0)*86400.0;
     Matrix P(6, 6);
@@ -217,7 +194,7 @@ int main() {
     }
 }
 }
-        DEInteg(VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi);
+        DEInteg(VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi,eopdata,Snm,Cnm,PC);
 
     for (j = 1; j <= 6; j++) {
         for( n=1; n <Phi.fil;n++) {
@@ -225,7 +202,7 @@ int main() {
         }
     }
 
-       DEInteg(Accel,0,t-t_old,1e-13,1e-6,6,Y_old);
+       DEInteg(Accel,0,t-t_old,1e-13,1e-6,6,Y_old,eopdata,Snm,Cnm,PC);
         Y = Y_old;
 
         theta = gmst(Mjd_UT1);
@@ -305,7 +282,7 @@ int main() {
     auxParam.Mjd_UTC = Mjd_UTC;
     auxParam.Mjd_TT = Mjd_TT;
 
-    DEInteg (Accel,0,-(obs(46,1)-obs(1,1))*86400.0,1e-13,1e-6,6,Y);
+    DEInteg (Accel,0,-(obs(46,1)-obs(1,1))*86400.0,1e-13,1e-6,6,Y,eopdata,Snm,Cnm,PC);
     Matrix Y0 = Y;
     double Y_t[6] = {5753.173e3, 2673.361e3, 3440.304e3, 4.324207e3, -1.924299e3, -5.728216e3};
     Matrix Y_true(6,1,Y_t,6);
