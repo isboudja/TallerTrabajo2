@@ -28,7 +28,6 @@ Matrix AzElPa(const Matrix& s) {
     dEds(1, 1) = -s(1, 1) * s(1, 3) / rho;
     dEds(1, 2) = -s(1, 2) * s(1, 3) / rho;
     dEds(1, 3) = rho;
-    dEds.print();
     double s_dot_s = s(1,1) * s(1,1) + s(1,2) * s(1,2) + s(1,3) * s(1,3);
     dEds = dEds / s_dot_s;
 

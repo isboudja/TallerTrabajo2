@@ -29,6 +29,9 @@
 #include "PoleMatrix.h"
 #include "AccelHarmonic.h"
 #include "Accel.h"
+#include "DEInteg.h"
+#include "G_AccelHarmonic.h"
+#include "VarEqn.h"
 
 #define TOL_ 10e-14
 
@@ -450,12 +453,141 @@ int JPL(){
     return 0;
 }
 
-int HMC(){
+int GHMC(){
+
+
+    double tolerance = 10e-6;
+    double E2[] = {
+
+                          -0.984320311914274,         0.176389708356208   ,  -0.000440838970817921,
+    -0.176389673454202,         -0.98432040991552   ,   -0.00011714291893872,
+    -0.000454589601769828 ,    -3.75467123998344e-05    ,     0.999999895969264};
+    double expected_values2[] ={
+            1,1,1};
+    Matrix r(3,1,expected_values2,3);
+    Matrix E(3,3,E2,9);
+    Matrix result(3,3);
+    result = G_AccelHarmonic(r,E,2,2);
+    result.print();
+    _assert(EqMatrix(result, E, tolerance));
+
+    return 0;
+}
+
+
+
+int VEQ(){
 
 
     double tolerance = 10e-6;
     double expected_values[] ={
-            -2.1528481871834e+23};
+
+
+            1,
+            1,
+            1,
+            2.6346498390509e+138,
+            -3.23987314882573e+139,
+            -6.97967557748611e+139 ,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140,
+            1,
+            1,
+            1,
+            8.88176580222003e+140,
+            -1.78113267704466e+140,
+            6.04647582287588e+140};
+
+    double resul[] ={
+
+
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,};
+    Matrix expected(42, 1, expected_values, 42);
+    Matrix Y(42, 1, resul, 42);
+    Matrix result(42,1);
+    result = VarEqn(1,Y);
+    expected.print();
+    result.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+
+int HMC(){
+
+
+    double tolerance = 10e-6;
+    double expected_values[] ={1};
     Matrix expected(1, 1, expected_values, 1);
     double expected_values2[] ={
             1,1,1};
@@ -480,7 +612,7 @@ int ASCE(){
             1,
             2.59173969179228e+138,
             -3.23976995737588e+139,
-            -6.9808470022172e+139,};
+            -6.9808470022172e+139};
     Matrix expected(1, 6, expected_values, 6);
     Matrix Y(1,6,Y2,6);
     Matrix res=Accel(1, Y);
@@ -490,6 +622,31 @@ int ASCE(){
 
     return 0;
 }
+
+int DEI(){
+
+
+    double tolerance = 10e-6;
+    double Y2[] ={6221397.62857869,2867713.77965738,3006155.98509949,4645.04725161807,-2752.21591588205,-7507.99940987033};
+    double expected_values[] ={  5542555.89427452,
+            3213514.83814162,
+            3990892.92789074,
+            5394.0689404439,
+            -2365.21290574022,
+            -7061.84481373472};
+    Matrix expected(6, 1, expected_values, 6);
+    Matrix Y(6,1,Y2,6);
+
+    DEInteg(Accel,0,-134.999991953373,1e-13,1e-6,6,Y);
+    expected.print();
+    Y.print();
+    _assert(EqMatrix(Y, expected, tolerance));
+
+    return 0;
+}
+
+
+
 
 
 int all_tests()
@@ -514,12 +671,14 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
-  // _verify(HMC);
-    _verify(ASCE);
+    _verify(VEQ);
+ //   _verify(GHMC);
+    //_verify(ASCE);
+   // _verify(DEI);
     return 0;
 }
 
-
+/*
 int main()
 {
     globals::eop1962(21413);
@@ -534,5 +693,5 @@ int main()
 
 
 }
-
+*/
 

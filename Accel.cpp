@@ -23,6 +23,7 @@ Matrix Accel(double x,Matrix &Y){
     AuxParam AuxParam;
     Constants c;
     AuxParam.Mjd_UTC = 4.974611635416653e+04;
+
     Matrix eopdata(13, 21413);
     FILE *fid = fopen("../texts/eop19620101.txt", "r");
 
@@ -42,6 +43,7 @@ Matrix Accel(double x,Matrix &Y){
 
     fclose(fid);
     // Cálculo de los parámetros de tiempo
+
     Matrix result(1,9);
     result = IERS(eopdata, AuxParam.Mjd_UTC + x/86400,'n');
     x_pole = result(1,1);
@@ -64,7 +66,6 @@ Matrix Accel(double x,Matrix &Y){
     Matrix N = NutMatrix(Mjd_TT);
     Matrix T = N * P;
     Matrix E = PoleMatrix(x_pole, y_pole) * GHAMatrix(Mjd_UT1) * T;// Tiempo barycentrico dinamico modificado
-    E.print();
     double MJD_TDB = Mjday_TDB(Mjd_TT);
     Matrix r_Mercury2(1,3);
     Matrix r_Venus2(1,3);
@@ -108,7 +109,7 @@ Matrix Accel(double x,Matrix &Y){
     AuxParam.planets = 1;
     Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
     Matrix r2 = r.transpose();
-    a.print();
+
 
     // Perturbaciones luni-solares
     if (AuxParam.sun) {

@@ -17,6 +17,7 @@ class Matrix
         ~Matrix();
         Matrix transpose() const;
         Matrix& operator=(const Matrix& matrix2);
+        Matrix operator+(double scalar) const;
         Matrix  operator+(const Matrix& matrix2) const;
         Matrix  operator-(const Matrix& matrix2) const;
         Matrix operator^(double exponent) const;
@@ -26,8 +27,7 @@ class Matrix
         Matrix operator/(double scalar) const;
         double& operator()(const int i, const int j) const;
         double norm() const;
-
-
+        Matrix operator-(double scalar) const;
         void print();
  
     private:

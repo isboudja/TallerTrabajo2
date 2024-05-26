@@ -397,7 +397,6 @@ Matrix JPL_Eph_DE430(double Mjd_TDB) {
     res2= Cy_Pluto.sub((6*j+6),(6*j+1));
     res3= Cz_Pluto.sub((6*j+6),(6*j+1));
     r_Pluto = Cheb3D(Mjd_TDB, 6, Mjd0, Mjd0+32,res1,res2,res3)*1e3;
-    r_Pluto.print();
 
     n=819;
     j=1;

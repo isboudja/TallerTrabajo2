@@ -15,8 +15,14 @@
 #include "R_z.h"
 #include "AzElPa.h"
 #include "AuxParam.h"
+#include "Accel.h"
+#include "DEInteg.h"
+#include "VarEqn.h"
+#include "LTC.h"
+#include "TimeUpdate.h"
+#include "MeasUpdate.h"
 
-/*
+
 int main() {
 
     // Carga de archivos
@@ -30,12 +36,12 @@ int main() {
         exit(EXIT_FAILURE);
     }
     for (int i = 1; i <= 21413; i++) {
-        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &(*globals::matrix)(1, i),
-               &(*globals::matrix)(2, i), &(*globals::matrix)(3, i),
-               &(*globals::matrix)(4, i), &(*globals::matrix)(5, i), &(*globals::matrix)(6, i),
-               &(*globals::matrix)(7, i), &(*globals::matrix)(8, i), &(*globals::matrix)(9, i),
-               &(*globals::matrix)(10, i), &(*globals::matrix)(11, i), &(*globals::matrix)(12, i),
-               &(*globals::matrix)(13, i));
+        fscanf(fid, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &eopdata(1, i),
+               &eopdata(2, i), &eopdata(3, i),
+               &eopdata(4, i), &eopdata(5, i), &eopdata(6, i),
+               &eopdata(7, i), &eopdata(8, i), &eopdata(9, i),
+               &eopdata(10, i), &eopdata(11, i), &eopdata(12, i),
+               &eopdata(13, i));
     }
 
 
@@ -55,18 +61,36 @@ int main() {
     double az;
     double el;
     double Dist;
+    double UT1_TAI;
+    double UTC_GPS;
+    double UT1_GPS;
+    double TT_UTC;
+    double GPS_UTC;
+    double x_pole;
+    double y_pole;
+    double UT1_UTC;
+    double LOD;
+    double dpsi;
+    double deps;
+    double dx_pole;
+    double dy_pole;
+    double TAI_UTC;
     if (fid == nullptr) {
         printf("error");
         exit(EXIT_FAILURE);
     }
     int n;
     int m;
-    for (n = 0; n <= 46; n++) {
+    int ii;
+    int i;
+    int j;
+    int l;
+    for (n = 0; n < 46; n++) {
         fscanf(fid2, "%lf%lf%lf%lf%lf%lf%lf%lf%lf", &y, &M, &d, &H, &min, &s, &az, &el, &Dist);
-        obs(n, 1) = Mjday(y, M, d, H, m, s);
-        obs(n, 2) = Constants::Rad * az;
-        obs(n, 3) = Constants::Rad * el;
-        obs(n, 4) = 1e3 * Dist;
+        obs(n+1, 1) = Mjday(y, M, d, H, m, s);
+        obs(n+1, 2) = Constants::Rad * az;
+        obs(n+1, 3) = Constants::Rad * el;
+        obs(n+1, 4) = 1e3 * Dist;
 
     }
 
@@ -87,10 +111,17 @@ int main() {
     int Mjd2 = obs(9, 1);
     int Mjd3 = obs(18, 1);
 
-    double LT_matrix[3][3] = {{0}};
 
+    Matrix LT_matrix(3,3);
 
-    Matrix Y0_apr(6, 6);
+    Matrix Y0_apr(6, 1);
+    Y0_apr(1,1) =  6221397.62857869;
+    Y0_apr(2,1) = 2867713.77965738 ;
+    Y0_apr(3,1) = 3006155.98509949;
+    Y0_apr(4,1) = 4645.04725161807;
+    Y0_apr(5,1) = -2752.21591588205;
+    Y0_apr(6,1) =  -7507.99940987033;
+
 
     double Mjd0 = Mjday(1995, 1, 29, 2, 38, 0);
 
@@ -105,56 +136,78 @@ int main() {
 
     double n_eqn = 6;
     Matrix Y(6,1);
-    //Y = DEInteg(@Accel,0,-(obs(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr);
-
+    DEInteg(Accel,0,-(obs(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr);
+    Y = Y0_apr;
+    double gd = -(obs(9,1)-Mjd0)*86400.0;
     Matrix P(6, 6);
 
-    for (int i = 1; i < 4; i++) {
+    for (i = 1; i < 4; i++) {
         P(i, i) = 1e8;
     }
-    for (int i = 4; i < 7; i++) {
+    for (i = 4; i < 7; i++) {
         P(i, i) = 1e3;
     }
 
 
-    //LT = LTC(lon,lat);
+    Matrix LT = LTC(lon,lat);
     Matrix yPhi(42, 1);
     Matrix Phi(6, 6);
 
     int t = 0;
-
-    for (int i = 1; i <= nobs; i++) {
-        int t_old = t;
-        Matrix Y_old(6, 1) = Y;
+    int t_old;
+    Matrix Y_old(6,1);
+    Matrix Resulteop(1, 9);
+    Matrix AZEL(1,8);
+    Matrix Azim(1,2);
+    Matrix Elev(1,2);
+    Matrix dAds(1,2);
+    Matrix dEds(1,2);
+    Matrix dAdY2(1,3);
+    Matrix cer(1,3);
+    Matrix dAdY(1,6);
+    Matrix dis(1,1);
+    Matrix K(6,1);
+    Matrix dEdY2(1,3);
+    Matrix dEdY(1,6);
+    Matrix U(3,3);
+    Matrix r(1,3);
+    Matrix s1(1,3);
+    double Mjd_TT;
+    double Mjd_UT1;
+    double theta;
+    Matrix dDds(3,1);
+    Matrix DD(1,3);
+    Matrix dDdY2(1,3);
+    Matrix dDdY(1,6);
+    for (i = 1; i <= nobs; i++) {
+        t_old = t;
+        Y_old = Y;
 
         Mjd_UTC = obs(i, 1);
         t = (Mjd_UTC - Mjd0) * 86400.0;
-        Matrix Resulteop(1, 9);
-        Resulteop = IERS(eopdata, Mjd_UTC, 'l');
-        double x_pole = Resulteop(1, 1);
-        double y_pole = Resulteop(1, 2);
-        double UT1_UTC = Resulteop(1, 3);
-        double LOD = Resulteop(1, 4);
-        double dpsi = Resulteop(1, 5);
-        double deps = Resulteop(1, 6);
-        double dx_pole = Resulteop(1, 7);
-        double dy_pole = Resulteop(1, 8);
-        double TAI_UTC = Resulteop(1, 9);
 
-        double UT1_TAI;
-        double UTC_GPS;
-        double UT1_GPS;
-        double TT_UTC;
-        double GPS_UTC;
+        Resulteop = IERS(eopdata, Mjd_UTC, 'l');
+        x_pole = Resulteop(1, 1);
+        y_pole = Resulteop(1, 2);
+         UT1_UTC = Resulteop(1, 3);
+        LOD = Resulteop(1, 4);
+         dpsi = Resulteop(1, 5);
+         deps = Resulteop(1, 6);
+        dx_pole = Resulteop(1, 7);
+         dy_pole = Resulteop(1, 8);
+         TAI_UTC = Resulteop(1, 9);
+
+
         timediff(UT1_UTC, TAI_UTC, UT1_TAI, UTC_GPS, UT1_GPS, TT_UTC, GPS_UTC);
 
-        double Mjd_TT = Mjd_UTC + TT_UTC / 86400;
-        double Mjd_UT1 = Mjd_TT + (UT1_UTC - TT_UTC) / 86400.0;
+         Mjd_TT = Mjd_UTC + TT_UTC / 86400;
+
+         Mjd_UT1 = Mjd_TT + (UT1_UTC - TT_UTC) / 86400.0;
         auxParam.Mjd_UTC = Mjd_UTC;
         auxParam.Mjd_TT = Mjd_TT;
 
 
-    for (int ii = 1; ii <= 6; ii++) {
+    for ( ii = 1; ii <= 6; ii++) {
         yPhi(ii, 1) = Y_old(ii, 1);
         for (int j = 1; j <= 6; j++){
             if (ii == j) {
@@ -164,62 +217,101 @@ int main() {
     }
 }
 }
-    // yPhi = DEInteg (@VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi);
+        DEInteg(VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi);
 
-    for (int j = 1; j <= 6; j++) {
-        for(int nnn=1; nnn <Phi.fil;nnn++) {
-            Phi(nnn,j) = yPhi(6 * j + nnn,1);
+    for (j = 1; j <= 6; j++) {
+        for( n=1; n <Phi.fil;n++) {
+            Phi(n,j) = yPhi(6 * j + n,1);
         }
     }
 
-    //Y = DEInteg (@Accel,0,t-t_old,1e-13,1e-6,6,Y_old);
+       DEInteg(Accel,0,t-t_old,1e-13,1e-6,6,Y_old);
+        Y = Y_old;
 
+        theta = gmst(Mjd_UT1);
 
-        double theta = gmst(Mjd_UT1);
-        Matrix U(3,3);
         U = R_z(theta);
-        Matrix r(1,3);
+
         r(1,1) = Y(1,1);
         r(1,2) = Y(1,2);
         r(1,3) = Y(1,3);
-        Matrix LT(3,3);
-        Matrix s(1,3);
-        s = LT*(U*r-Rs);
+
+        s1 = LT*(U*r-Rs);
 
 
-        //P = TimeUpdate(P, Phi);
-
-        Matrix AZEL(1,8);
-        AZEL = AzElPa(s);
-        dAdY = [dAds*LT*U,zeros(1,3)];
+        P = TimeUpdate(P, Phi,0.0);
 
 
-        [K, Y, P] = MeasUpdate ( Y, obs(i,2), Azim, sigma_az, dAdY, P, 6 );
+        AZEL = AzElPa(s1);
+        for(i=1;i<=2;i++){
+            Azim(1,i) = AZEL(1,i);
+            Elev(1,i) = AZEL(1,i+2);
+            dAds(1,i) = AZEL(1,i+4);
+            dEds(1,i) = AZEL(1,i+6);
+        }
 
 
-        r = Y(1:3);
-        s = LT*(U*r-Rs);
-        [Azim, Elev, dAds, dEds] = AzElPa(s);
-        dEdY = [dEds*LT*U,zeros(1,3)];
+         dAdY2 = dAds*LT*U;
+
+        dAdY = Matrix::concat(dAdY2,cer);
+
+        K = MeasUpdate( Y, obs(i,2), Azim, sigma_az, dAdY, P, 6);
 
 
-        [K, Y, P] = MeasUpdate ( Y, obs(i,3), Elev, sigma_el, dEdY, P, 6 );
+        r(1,1) = Y(1,1);
+        r(1,2) = Y(1,2);
+        r(1,3) = Y(1,3);
+        s1 = LT*(U*r-Rs);
+        AZEL = AzElPa(s1);
+        for(i=1;i<=2;i++){
+            Azim(1,i) = AZEL(1,i);
+            Elev(1,i) = AZEL(1,i+2);
+            dAds(1,i) = AZEL(1,i+4);
+            dEds(1,i) = AZEL(1,i+6);
+        }
 
+         dEdY2 = dEds*LT*U;
+         dEdY = Matrix::concat(dEdY2,cer);
 
-        r = Y(1:3);
-        s = LT*(U*r-Rs);
-        Dist = norm(s); dDds = (s/Dist)';
-        dDdY = [dDds*LT*U,zeros(1,3)];
+        K = MeasUpdate ( Y, obs(i,3), Elev, sigma_el, dEdY, P, 6 );
+        r(1,1) = Y(1,1);
+        r(1,2) = Y(1,2);
+        r(1,3) = Y(1,3);
+        s1 = LT*(U*r-Rs);
+        Dist = s1.norm();
 
-        % Measurement update
-        [K, Y, P] = MeasUpdate ( Y, obs(i,4), Dist, sigma_range, dDdY, P, 6 );
-        end
+        dis(1,1) = Dist;
+         dDds = (s1/Dist);
+         DD = dDds.transpose();
+         dDdY2 = DD*LT*U;
+         dDdY = Matrix::concat(dDdY2,cer);
+        K= MeasUpdate( Y, obs(i,4), dis, sigma_range, dDdY, P, 6 );
+    }
 
-    double Y_true[6] = {5753.173e3, 2673.361e3, 3440.304e3, 4.324207e3, -1.924299e3, -5.728216e3};
+    Resulteop = IERS(eopdata, obs(46,1), 'l');
+     x_pole = Resulteop(1, 1);
+    y_pole = Resulteop(1, 2);
+     UT1_UTC = Resulteop(1, 3);
+     LOD = Resulteop(1, 4);
+     dpsi = Resulteop(1, 5);
+     deps = Resulteop(1, 6);
+     dx_pole = Resulteop(1, 7);
+     dy_pole = Resulteop(1, 8);
+     TAI_UTC = Resulteop(1, 9);
 
+    timediff(UT1_UTC, TAI_UTC, UT1_TAI, UTC_GPS, UT1_GPS, TT_UTC, GPS_UTC);
 
-    double error_pos[3] = {Y0[0] - Y_true[0], Y0[1] - Y_true[1], Y0[2] - Y_true[2]};
-    double error_vel[3] = {Y0[3] - Y_true[3], Y0[4] - Y_true[4], Y0[5] - Y_true[5]};
+     Mjd_TT = Mjd_UTC + TT_UTC / 86400;
+    auxParam.Mjd_UTC = Mjd_UTC;
+    auxParam.Mjd_TT = Mjd_TT;
+
+    DEInteg (Accel,0,-(obs(46,1)-obs(1,1))*86400.0,1e-13,1e-6,6,Y);
+    Matrix Y0 = Y;
+    double Y_t[6] = {5753.173e3, 2673.361e3, 3440.304e3, 4.324207e3, -1.924299e3, -5.728216e3};
+    Matrix Y_true(6,1,Y_t,6);
+
+    double error_pos[3] = {Y0(1,1) - Y_true(1,1), Y0(2,1) - Y_true(2,1), Y0(3,1) - Y_true(3,1)};
+    double error_vel[3] = {Y0(4,1) - Y_true(4,1), Y0(5,1) - Y_true(4,1), Y0(6,1) - Y_true(6,1)};
 
 
     std::cout << "Error of Position Estimation" << std::endl;
@@ -232,4 +324,4 @@ int main() {
     std::cout << "dVz: " << error_vel[2] << " [m/s]" << std::endl;
 
     return 0;
-}*/
+}

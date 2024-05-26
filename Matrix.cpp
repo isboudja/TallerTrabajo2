@@ -253,3 +253,22 @@ Matrix Matrix::transpose() const {
     return result;
 }
 
+Matrix Matrix::operator+(double scalar) const {
+    Matrix result(fil, col);
+    for (int i = 0; i < fil; i++) {
+        for (int j = 0; j < col; j++) {
+            result.matrix[i][j] = matrix[i][j] + scalar;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::operator-(double scalar) const {
+    Matrix result(fil, col);
+    for (int i = 0; i < fil; ++i) {
+        for (int j = 0; j < col; ++j) {
+            result(i, j) = matrix[i][j] - scalar;
+        }
+    }
+    return result;
+}

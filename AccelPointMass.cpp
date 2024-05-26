@@ -13,8 +13,6 @@ Matrix AccelPointMass(const Matrix& r, const Matrix& s, double GM) {
     // Calculate the norms
     double norm_d = d.norm();
     double norm_s = s.norm();
-    printf("norm_d \n");
-    d.print();
     // Acceleration
 
     return (d/pow(norm_d,3) + s/pow(norm_s,3))*-GM;

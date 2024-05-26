@@ -47,7 +47,6 @@ fixf = mfme / 1440.;
     Result(1,7) /= Constants::Arcs*1.;
     Result(1,8) /= Constants::Arcs*1.;
 
-    preeop.print();
 } else if (interp == 'n') {
     int mjd = floor(Mjd_UTC);
     for (i = 0; i < eop.col; i++) {

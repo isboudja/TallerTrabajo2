@@ -35,25 +35,23 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
     Matrix r_bf =  E*r;
     Matrix r2(1,3);
 
-    r_bf.print();
     if(r_bf.col<3){
         for( n=1;n<=3;n++){
             r2(1,n) = r_bf(n,1);
         }
     }
-    r2.print();
+
     double d = r2.norm();
     double latgc = asin(r_bf(3,1) / d);
     double lon = atan2(r_bf(2,1), r_bf(1,1));
 
      Matrix Leg = Legendre(n_max, m_max, latgc);
-     Leg.print();
      Matrix pnm(1,(n_max+1)*(m_max+1));
      Matrix dpnm(1,(n_max+1)*(m_max+1));
      for(int i=1;i<=(n_max+1)*(m_max+1);i++){
          pnm(1,i) = Leg(1,i);
      }
-     pnm.print();
+
      int j = 1;
     for(int i=(n_max+1)*(m_max+1)+1;i<=((n_max+1)*(m_max+1))*2;i++){
         dpnm(1,j) = Leg(1,i);
@@ -103,13 +101,12 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
 
 
-    a_bf.print();
-    E.print();
+
     Matrix E2 = E.transpose();
-    E2.print();
+
 
     Matrix a = a_bf*E;
-    a.print();
+
     return a;
 }
 
