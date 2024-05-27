@@ -13,7 +13,7 @@ class globals {
 public:
     static Matrix *eopdata;
     static Matrix *obs;
-    static Matrix *Rs;
+    static Matrix *PC;
     static Matrix *Cnm;
     static Matrix *Snm;
     static Matrix *temp;

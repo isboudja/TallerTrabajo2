@@ -14,9 +14,10 @@
 #include "GHAMatrix.h"
 #include "AccelHarmonic.h"
 #include "G_AccelHarmonic.h"
+#include "globals.h"
 
 
-Matrix VarEqn(double x,Matrix &yPhi,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC){
+Matrix VarEqn(double x,Matrix &yPhi){
 
 AuxParam AuxParam;
 Constants c;
@@ -29,7 +30,7 @@ AuxParam.Mjd_UTC = 4.974611635416653e+04;
     AuxParam.moon    = 1;
     AuxParam.planets = 1;
     Matrix result(1,9);
-    result = IERS(eopdata, AuxParam.Mjd_UTC + x/86400,'n');
+    result = IERS(*globals::eopdata, AuxParam.Mjd_UTC + x/86400,'n');
     x_pole = result(1,1);
     y_pole = result(1,2);
     UT1_UTC = result(1,3);
@@ -73,8 +74,8 @@ AuxParam.Mjd_UTC = 4.974611635416653e+04;
         Phi(6,j) = yPhi(6*j+6,1);
     }
 
-    Matrix a = AccelHarmonic ( r, E, AuxParam.n, AuxParam.m,Snm,Cnm);
-    Matrix G = G_AccelHarmonic ( r, E, AuxParam.n, AuxParam.m ,Snm,Cnm);
+    Matrix a = AccelHarmonic( r, E, AuxParam.n, AuxParam.m);
+    Matrix G = G_AccelHarmonic( r, E, AuxParam.n, AuxParam.m);
 
 
     for (i=1;i<=3;i++){

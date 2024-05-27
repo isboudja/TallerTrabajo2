@@ -6,9 +6,9 @@
 #include <cstdlib>
 #include "JPL_Eph_DE430.h"
 #include "Cheb3D.h"
+#include "globals.h"
 
-
-Matrix JPL_Eph_DE430(double Mjd_TDB,Matrix &PC) {
+Matrix JPL_Eph_DE430(double Mjd_TDB) {
 
     Matrix x(1,100);
     Matrix z(1,100);
@@ -19,7 +19,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB,Matrix &PC) {
     double JD = Mjd_TDB + 2400000.5;
     double i;
     for (i = 0; i < 2285; i++) {
-        if(PC(i+1,1)<=JD && JD<=PC(i+1,2)){
+        if((*globals::PC)(i+1,1)<=JD && JD<=(*globals::PC)(i+1,2)){
             break;
 
         }
@@ -28,7 +28,7 @@ Matrix JPL_Eph_DE430(double Mjd_TDB,Matrix &PC) {
     double j;
     Matrix PCtemp(1,1020);
     for (j = 0; j < 1020; j++) {
-         PCtemp(1,j+1) = PC(i,j+1);
+         PCtemp(1,j+1) = (*globals::PC)(i,j+1);
     }
 
 

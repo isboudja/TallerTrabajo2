@@ -17,7 +17,9 @@
 #include "AccelHarmonic.h"
 #include "AccelPointMass.h"
 #include "JPL_Eph_DE430.h"
-Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC){
+#include "globals.h"
+
+Matrix Accel(double x,Matrix &Y){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
     AuxParam AuxParam;
@@ -28,7 +30,7 @@ Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &
     // Cálculo de los parámetros de tiempo
 
     Matrix result(1,9);
-    result = IERS(eopdata, AuxParam.Mjd_UTC + x/86400,'n');
+    result = IERS(*globals::eopdata, AuxParam.Mjd_UTC + x/86400,'n');
     x_pole = result(1,1);
     y_pole = result(1,2);
     UT1_UTC = result(1,3);
@@ -61,7 +63,7 @@ Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &
     Matrix r_Pluto2(1,3);
     Matrix r_Moon2(1,3);
     Matrix r_Sun2(1,3);
-    Matrix  res = JPL_Eph_DE430(MJD_TDB,PC);
+    Matrix  res = JPL_Eph_DE430(MJD_TDB);
     for(int j=1;j<=3;j++){
         r_Mercury2(1,j) = res(1,j*1);
         r_Venus2(1,j) = res(1,j+3);
@@ -80,9 +82,8 @@ Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &
 
     Matrix r(3,1);
     Matrix a2(1,3);
-
     for(int i=1;i<=3;i++){
-        r(i,1) = Y(1,i);
+        r(i,1) = Y(i,1);
         a2(1,i) = 1;
     }
     AuxParam.n = 20;
@@ -90,7 +91,7 @@ Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &
     AuxParam.sun     = 1;
     AuxParam.moon    = 1;
     AuxParam.planets = 1;
-    Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m,Snm,Cnm);
+    Matrix a = AccelHarmonic(r, E, AuxParam.n, AuxParam.m);
     Matrix r2 = r.transpose();
 
 
@@ -116,7 +117,7 @@ Matrix Accel(double x,Matrix &Y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &
 
     Matrix dY(1,6);
     for(int i=1;i<=3;i++){
-    dY(1,i) = Y(1,i+3);
+    dY(1,i) = Y(i+3,1);
     }
     dY(1,4) = a(1,1);
     dY(1,5) = a(1,2);

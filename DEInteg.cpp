@@ -4,6 +4,7 @@
 
 #include <limits>
 #include <algorithm>
+#include <iostream>
 #include "DEInteg.h"
 #include "Matrix.h"
 #include "math.h"
@@ -18,7 +19,7 @@ struct DE_STATE {
     int DE_INVPARAM = 6;
 };
 
-void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &), double t, double tout, double relerr, double abserr, int n_eqn, Matrix &y,Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC) {
+void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double relerr, double abserr, int n_eqn, Matrix &y) {
     double twou = 2 * std::numeric_limits<double>::epsilon();
     double fouru = 4 * std::numeric_limits<double>::epsilon();
     bool nornd;
@@ -30,7 +31,8 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     int PermitTOUT = true;
     double told = 0;
     double ip1;
-    double two[] = {1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 2048.0, 4096.0, 8192.0};
+    double twoval [] = {1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0, 2048.0, 4096.0, 8192.0};
+    Matrix two(1,14,twoval,14);
     double gstr[] = {1.0, 0.5, 0.0833, 0.0417, 0.0264, 0.0188, 0.0143, 0.0114, 0.00936, 0.00789, 0.00679, 0.00592,
                      0.00524, 0.00468};
 
@@ -85,6 +87,7 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     double del = tout - t;
     double absdel = abs(del);
     double erkm2;
+    int n;
     double nsp1;
     double erkm1;
     double hold;
@@ -109,8 +112,9 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     double abseps = abserr / epsilon;
     int kold;
     double x;
+    int ssj = 0;
     double h;
-    bool start;
+    bool start =false;
     int ki;
     double sum;
     double psijm1;
@@ -144,10 +148,13 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
 
         // Si ya se ha pasado del punto de salida, interpola la solución y retorna
         if (std::abs(x - t) >= absdel) {
-
+            for(n=1;i<=n_eqn;n++){
+                yout(n, 1.0) = 0.0;
+                ypout(n, 1.0) =0.0;
+            }
             g(2, 1) = 1.0;
             rho(2, 1) = 1.0;
-             hi = tout - x;
+            hi = tout - x;
             ki = kold + 1;
 
             // Inicializa w[*] para calcular g[*]
@@ -197,7 +204,7 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
 
     if (!PermitTOUT && (fabs(tout - x) < fouru * fabs(x))){
         h = tout - x;
-        Dy = func(x,yy,eopdata,Snm,Cnm,PC);
+        Dy = func(x,yy);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
@@ -247,19 +254,20 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
 
 
     if(start){
-        Dy = func(x,y,eopdata,Snm,Cnm,PC);
+        Dy = func(x,y);
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
-
         sum = 0.0;
         for ( l=1;l<=n_eqn;l++){
         phi(l,2) = yp(l,1);
         phi(l,3) = 0.0;
+        double ssj = yp(l,1)*yp(l,1);
+        double ssj2 = wt(l,1)*wt(l,1);
         sum = sum + (yp(l,1)*yp(l,1))/(wt(l,1)*wt(l,1));
         }
             sum  = sqrt(sum);
-     absh = abs(h);
+        absh = abs(h);
     if (epsilon<16.0*sum*h*h){
         absh=0.25*sqrt(epsilon/sum);
     }
@@ -282,7 +290,8 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
 
 
     while(true){
-
+            ssj++;
+            std::cout << ssj << std::endl;
           kp1 = k+1;
          kp2 = k+2;
          km1 = k-1;
@@ -415,10 +424,12 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
         xold = x;
         x = x + h;
          absh = abs(h);
-        Dy = func(x,p,eopdata,Snm,Cnm,PC);
+        Dy = func(x,p);
+
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
+
          erkm2 = 0.0;
          erkm1 = 0.0;
          erk = 0.0;
@@ -428,28 +439,34 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
 
                  temp3 = 1.0/wt(l,1);
                  temp4 = yp(l,1) - phi(l,1+1);
+                 std::cout << yp(l,1) << std::endl;
+            std::cout << phi(l,1+1) << std::endl;
         if (km2> 0){
             erkm2 = erkm2 + ((phi(l,km1+1)+temp4)*temp3)*((phi(l,km1+1)+temp4)*temp3);
         }
         if (km2>=0){
             erkm1 = erkm1 + ((phi(l,k+1)+temp4)*temp3)*((phi(l,k+1)+temp4)*temp3);
     }
+
                 erk = erk + (temp4*temp3)*(temp4*temp3);
+
+
 }
 
 
         if (km2> 0){
-            erkm2 = absh*sig(km1+1,1)*gstr[km2+1]*sqrt(erkm2);
+            erkm2 = absh*sig(km1+1,1)*gstr[km2]*sqrt(erkm2);
         }
         if (km2>=0){
-            erkm1 = absh*sig(k+1,1)*gstr[km1+1]*sqrt(erkm1);
+            erkm1 = absh*sig(k+1,1)*gstr[km1]*sqrt(erkm1);
     }
 
 
-         temp5 = absh*sqrt(erk);
 
+         temp5 = absh*sqrt(erk);
          err = temp5*(g(k+1,1)-g(kp1+1,1));
-        erk = temp5*sig(kp1+1,1)*gstr[k+1];
+        erk = temp5*sig(kp1+1,1)*gstr[k];
+
          knew = k;
 
         if (km2 >0){
@@ -496,7 +513,7 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
                 knew = 1;
             }
                     h = temp2*h;
-            k = knew;
+                    k = knew;
             if (abs(h)<fouru*abs(x)){
                 crash = true;
                 h = sign_(fouru*abs(x), h);
@@ -529,14 +546,16 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     for (l=1;l<=n_eqn;l++){
 
              rho2 = temp1*(yp(l,1) - phi(l,2)) - phi(l,17);
-            y(l,1) =  rho2 + p(l,1) ;
-    phi(l,16) = (y(l,1) - p(l,1)) - rho2;
+             y(l,1) =  rho2 + p(l,1) ;
+             phi(l,16) = (y(l,1) - p(l,1)) - rho2;
     }
     }
-        Dy = func(x,yy,eopdata,Snm,Cnm,PC);
+        Dy = func(x,yy);
+
         for(i=1;i<=Dy.col;i++){
             yp(i,1) = Dy(1,i);
         }
+
     for (l=1;l<=n_eqn;l++){
     phi(l,kp1+1) = yp(l,1) - phi(l,2);
     phi(l,kp2+1) = phi(l,kp1+1) - phi(l,kp2+1);
@@ -565,8 +584,9 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     if (kp1<=ns){
         for (l=1;l<=n_eqn;l++){
             erkp1 = erkp1 + (phi(l,kp2+1)/wt(l,1))*(phi(l,kp2+1)/wt(l,1));
+
         }
-            erkp1 = absh*gstr[kp1+1]*sqrt(erkp1);
+            erkp1 = absh*gstr[kp1]*sqrt(erkp1);
     if (k>1){
         if( erkm1<=std::min(erk,erkp1)){
 
@@ -580,7 +600,7 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
     }
             }
     }else{ if (erkp1<0.5*erk){
-    k = kp1;
+                    k = kp1;
                         erk = erkp1;
                     }
                 }
@@ -589,21 +609,24 @@ void DEInteg(Matrix (*func)(double, Matrix &,Matrix &,Matrix &,Matrix &,Matrix &
         }
     }
 
-
-    if ( phase1 || (p5eps>=erk*two[k+2]) ){
+        double ssj = two(1,k+2);
+    if ( phase1 || (p5eps>=erk*two(1,k+2)) ){
         hnew = 2.0*h;
+
     } else{
     if (p5eps<erk){
         temp2 = k+1;
-    r = p5eps/pow(erk,1.0/temp2);
-    hnew = absh*std::max(0.5, std::min(0.9,r));
-    hnew = sign_(std::max(hnew, fouru*abs(x)), h);
+        r = p5eps/pow(erk,1.0/temp2);
+        hnew = absh*std::max(0.5, std::min(0.9,r));
+        hnew = sign_(std::max(hnew, fouru*abs(x)), h);
     }else{
-    hnew = h;
+        hnew = h;
 }
 }
     h = hnew;
-
+    //std::cout << h << std::endl;
+    //std::cout << two(1,k+2) << std::endl;
+    //std::cout << erk << std::endl;
 
     if (crash){
         State_    = DE_STATE.DE_BADACC;

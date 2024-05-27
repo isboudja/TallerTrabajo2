@@ -7,7 +7,7 @@
 
 #include "Matrix.h"
 
-Matrix VarEqn(double x,Matrix &Y, Matrix &eopdata,Matrix &Snm,Matrix &Cnm,Matrix &PC);
+Matrix VarEqn(double x,Matrix &Y);
 
 
 #endif //UNTITLED_VAREQN_H

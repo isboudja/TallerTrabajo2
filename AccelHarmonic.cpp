@@ -6,8 +6,9 @@
 #include "AccelHarmonic.h"
 #include "SAT_Const.h"
 #include "Legendre.h"
+#include "globals.h"
 
-Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max,Matrix &Snm,Matrix &Cnm) {
+Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
     int n;
     Constants constants;
@@ -52,8 +53,8 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max,Matrix &Snm,M
             double pnm_val = pnm(1, j); // Almacenar el valor para evitar recalculaciones
             double dpnm_val = dpnm(1, j); // Almacenar el valor para evitar recalculaciones
 
-            double Cnm_val = Cnm(n + 1, m + 1); // Almacenar el valor para evitar recalculaciones
-            double Snm_val = Snm(n + 1, m + 1); // Almacenar el valor para evitar recalculaciones
+            double Cnm_val = (*globals::Cnm)(n + 1, m + 1); // Almacenar el valor para evitar recalculaciones
+            double Snm_val = (*globals::Snm)(n + 1, m + 1); // Almacenar el valor para evitar recalculaciones
 
             q1 += pnm_val * (Cnm_val * cos(m * lon) + Snm_val * sin(m * lon));
             q2 += dpnm_val * (Cnm_val * cos(m * lon) + Snm_val * sin(m * lon));

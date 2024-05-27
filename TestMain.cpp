@@ -32,9 +32,19 @@
 #include "DEInteg.h"
 #include "G_AccelHarmonic.h"
 #include "VarEqn.h"
+#include "AuxParam.h"
+#include "PrecMatrix.h"
+#include "NutMatrix.h"
+#include "TimeUpdate.h"
+#include "MeasUpdate.h"
+#include "LTC.h"
+#include "EqnEquinox.h"
+#include "gast.h"
+#include "GHAMatrix.h"
+#include "gmst.h"
 
 #define TOL_ 10e-14
-/*
+
 using namespace std;
 int tests_run = 0;
 Constants c;
@@ -362,7 +372,7 @@ int IER(){
     double Mjd_UTC = 37665.5;
     char interp = 'l';
     Matrix result(1,9);
-    result = IERS(*globals::matrix,Mjd_UTC,interp);
+    result = IERS(*globals::eopdata,Mjd_UTC,interp);
     double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
     Matrix expected(1, 9, expected_values, 9);
     result.print();
@@ -374,14 +384,11 @@ int IER(){
 
 int PMatrix(){
 
-/*
-    Mjd_TT = AuxParam.Mjd_UTC + x/86400 + TT_UTC/86400;
 
-    P = PrecMatrix(const.MJD_J2000,Mjd_TT);
-    Matrix result(1,9);
-    result = IERS(*globals::matrix,Mjd_UTC,interp);
-    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
-    Matrix expected(1, 9, expected_values, 9);
+    double tolerance = 10e-5;
+    Matrix result = PrecMatrix(1,1);
+    double expected_values[] = {1,0,0.,0.,1.,0,0.,0,1.};
+    Matrix expected(3, 3, expected_values, 9);
     result.print();
     expected.print();
     _assert(EqMatrix(result, expected, tolerance));
@@ -397,10 +404,12 @@ int NMatrix(){
     Matrix val(13,13);
     double Mjd_UTC = 37665.5;
     char interp = 'l';
-    Matrix result(1,9);
-    result = IERS(*globals::matrix,Mjd_UTC,interp);
-    double expected_values[] = {-6.9328e-08,1.0353e-06,0.0323,0.0017,3.1086e-07,2.9954e-08,0.,0,2};
-    Matrix expected(1, 9, expected_values, 9);
+    Matrix result(3,3);
+    result = NutMatrix(1.);
+    double expected_values[] = {0.999999999623993     ,-2.51565103111378e-05   ,  -1.09162543714418e-05,
+            2.51560791026998e-05       ,  0.999999998903467  ,    -3.9499840995938e-05,
+            1.09172480376291e-05   ,    3.9499566370893e-05 ,        0.999999999160299};
+    Matrix expected(3, 3, expected_values, 9);
     result.print();
     expected.print();
     _assert(EqMatrix(result, expected, tolerance));
@@ -411,14 +420,13 @@ int NMatrix(){
 int PoMatrix(){
 
 
-    double tolerance = 10e-4;
+    double tolerance = 10e-9;
     Matrix val(13,13);
-    Matrix result(1,9);
-    result = PoleMatrix(1.0,1.0);
+    Matrix result = PoleMatrix(1.0,1.0);
     double expected_values[] = {0.54030230586814    ,     0.708073418273571       ,  0.454648713412841,
     0    ,      0.54030230586814    ,    -0.841470984807897,
     -0.841470984807897    ,     0.454648713412841   ,      0.291926581726429};
-    Matrix expected(1, 9, expected_values, 9);
+    Matrix expected(3, 3, expected_values, 9);
     result.print();
     expected.print();
     _assert(EqMatrix(result, expected, tolerance));
@@ -574,7 +582,7 @@ int VEQ(){
     Matrix expected(42, 1, expected_values, 42);
     Matrix Y(42, 1, resul, 42);
     Matrix result(42,1);
-    result = VarEqn(1,Y,eopdata,Snm,Cnm);
+    result = VarEqn(1,Y);
     expected.print();
     result.print();
     _assert(EqMatrix(result, expected, tolerance));
@@ -587,14 +595,19 @@ int HMC(){
 
 
     double tolerance = 10e-6;
-    double expected_values[] ={1};
-    Matrix expected(1, 1, expected_values, 1);
-    double expected_values2[] ={
-            1,1,1};
-    Matrix r(1,3,expected_values2,3);
-    Matrix E(3,1,expected_values2,3);
-    Matrix result(1,1);
-    result = AccelHarmonic(r,E,2,2);
+    double r2  [] ={7101597.83995656,
+            1295244.79268407,
+            12755.6074812101};
+    double expected_values2[] ={   -7.53454836070451,
+                                   -1.37427214614486,
+                                   -0.0135587742125453};
+    double E2[] ={    -0.984333171840543    ,     0.176317930080741 ,    -0.000440847341518802,
+    -0.17631789518587     ,   -0.984333269844254     ,-0.000117110813026442,
+    -0.000454589441322244    , -3.75467826882455e-05   ,      0.999999895969334};
+    Matrix r(3,1,r2,3);
+    Matrix E(3,3,E2,9);
+    Matrix expected(1,3,expected_values2,3);
+    Matrix result = AccelHarmonic(r,E,2,2);
     expected.print();
     result.print();
     _assert(EqMatrix(result, expected, tolerance));
@@ -614,7 +627,7 @@ int ASCE(){
             -3.23976995737588e+139,
             -6.9808470022172e+139};
     Matrix expected(1, 6, expected_values, 6);
-    Matrix Y(1,6,Y2,6);
+    Matrix Y(6,1,Y2,6);
     Matrix res=Accel(1, Y);
     expected.print();
     res.print();
@@ -645,8 +658,141 @@ int DEI(){
     return 0;
 }
 
+int Tup(){
 
 
+    double tolerance = 10e-9;
+    Matrix P(1,1);
+    P(1,1)  = 1.;
+    Matrix Phi(1,1);
+    Phi(1,1) = 1.;
+    Matrix result = TimeUpdate(P,Phi,1.0);
+    double expected_values[] = {2};
+    Matrix expected(1, 1, expected_values, 1);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+int Mup(){
+
+
+    double tolerance = 10e-9;
+    Matrix x(1,1);
+    x(1,1)  = 1.;
+    Matrix P(1,1);
+    P(1,1) = 1.;
+    Matrix g(1,1);
+    g(1,1)  = 1.;
+    Matrix G(1,1);
+    G(1,1) = 1.;
+    Matrix result = MeasUpdate(x,1.,g,1.,G,P,1.);
+    double expected_values[] = {0.5};
+    Matrix expected(1, 1, expected_values, 1);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+int LC(){
+
+
+    double tolerance = 10e-9;
+    Matrix result = LTC(1.,1.);
+    double expected_values[] = {-0.841470984807897  ,        0.54030230586814    ,                     0,
+    -0.454648713412841     ,   -0.708073418273571 ,         0.54030230586814,
+    0.291926581726429      ,   0.454648713412841      ,   0.841470984807897};
+    Matrix expected(1, 1, expected_values, 1);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+}
+
+int Nox(){
+
+
+    double tolerance = 10e-9;
+    double result = EqnEquinox(1.);
+    double expected_values[] = {2.51565103142908e-05};
+    Matrix res(1,1);
+    res(1,1) = result;
+    Matrix expected(1, 1, expected_values, 1);
+    res.print();
+    expected.print();
+    _assert(EqMatrix(res, expected, tolerance));
+
+    return 0;
+}
+
+int GAS(){
+
+    double tolerance = 10e-9;
+    double result = gast(1.);
+    double expected_values[] = {0.990436095961894};
+    Matrix res(1,1);
+    res(1,1) = result;
+        Matrix expected(1, 1, expected_values, 1);
+        res.print();
+        expected.print();
+        _assert(EqMatrix(res, expected, tolerance));
+
+        return 0;
+
+        }
+
+int GHAM(){
+
+    double tolerance = 10e-9;
+    Matrix result = GHAMatrix(1.);
+    double expected_values[] = {0.548325220865005        , 0.836265180527889        ,                 0,
+    -0.836265180527889  ,       0.548325220865005   ,                      0,
+    0            ,             0    ,                     1};
+    Matrix expected(3, 3, expected_values, 9);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+
+}
+
+int GBS(){
+
+    double tolerance = 10e-9;
+    Matrix result = GHAMatrix(1.);
+    double expected_values[] = {0.548325220865005        , 0.836265180527889        ,                 0,
+                                -0.836265180527889  ,       0.548325220865005   ,                      0,
+                                0            ,             0    ,                     1};
+    Matrix expected(3, 3, expected_values, 9);
+    result.print();
+    expected.print();
+    _assert(EqMatrix(result, expected, tolerance));
+
+    return 0;
+
+}
+
+int gms(){
+
+    double tolerance = 10e-9;
+    double result = gmst(1.);
+    double expected_values[] = { 0.99041093945158};
+    Matrix res(1,1);
+    res(1,1) = result;
+    Matrix expected(1, 1, expected_values, 1);
+    res.print();
+    expected.print();
+    _assert(EqMatrix(res, expected, tolerance));
+
+    return 0;
+
+}
 
 
 int all_tests()
@@ -671,17 +817,32 @@ int all_tests()
     _verify(UNI);
     _verify(IER);
     _verify(Legend);
-    _verify(VEQ);
+    _verify(PMatrix);
+    _verify(PoMatrix);
+    _verify(NMatrix);
+    _verify(Tup);
+    _verify(Mup);
+    _verify(Nox);
+    _verify(GAS);
+    _verify(GHAM);
+    _verify(GBS);
+    _verify(gms);
+    _verify(HMC);
+//    _verify(VEQ);
  //   _verify(GHMC);
-    //_verify(ASCE);
+   // _verify(ASCE);
    // _verify(DEI);
     return 0;
 }
 
-/*
+
 int main()
 {
-    globals::eop1962(21413);
+    AuxParam AuxParam;
+    globals::eop1962();
+    globals::GGM();
+    globals::DE430();
+    globals::GEOS3(46);
 
     int result = all_tests();
 
@@ -691,7 +852,6 @@ int main()
    printf("Tests run: %d\n", tests_run);
    return result != 0;
 
-
 }
-*/
+
 

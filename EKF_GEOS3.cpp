@@ -21,57 +21,53 @@
 #include "LTC.h"
 #include "TimeUpdate.h"
 #include "MeasUpdate.h"
-
-
+#include "globals.h"
+/*
 int main() {
 
     // Carga de archivos
     // Código para cargar archivos GGM03S.txt, eop19620101.txt, y GEOS3.txt
 
 
+    globals::eop1962();
+    globals::DE430();
+    globals::GGM();
 
     AuxParam auxParam;
     int nobs = 46;
+    globals::GEOS3(nobs);
+    double y;
+    double M;
+    double d;
+    double H;
+    double min;
+    double s;
+    double az;
+    double el;
+    double Dist;
+    double UT1_TAI;
+    double UTC_GPS;
+    double UT1_GPS;
+    double TT_UTC;
+    double GPS_UTC;
+    double x_pole;
+    double y_pole;
+    double UT1_UTC;
+    double LOD;
+    double dpsi;
+    double deps;
+    double dx_pole;
+    double dy_pole;
+    double TAI_UTC;
+    int n;
+    int m;
+    int ii;
+    int i;
+    int j;
+    int l;
 
+    Matrix Rs(nobs, 4);
 
-
-
-    FILE *fid3 = fopen("../texts/GGM03S.txt","r");
-    Matrix Cnm(181,181);
-    Matrix Snm(181,181);
-    Matrix temp(1,6);
-    double c;
-    if(fid3==nullptr){
-        printf("error");
-        exit(EXIT_FAILURE);
-    }
-
-    for (n=0;n<=180;n++){
-        for (m=0;m<=n;m++) {
-            fscanf(fid3, "%d%d%lf%lf%lf%lf",&c,&c,&temp(1,3),&temp(1,4),&temp(1,5),&temp(1,6));
-            Cnm(n+1,m+1) = temp(1,3);
-            Snm(n+1,m+1) = temp(1,4);
-        }
-    }
-
-    fclose(fid3);
-
-    FILE *fid4 = fopen("../texts/DE430Coeff.txt","r");
-    Matrix PC(2285,1020);
-
-    if(fid4==nullptr){
-        printf("error2");
-        exit(EXIT_FAILURE);
-    }
-
-    for (n=1;n<=2285;n++){
-        for (m=1;m<=1020;m++) {
-            fscanf(fid4, "%lf,",&PC(n,m));
-        }
-    }
-
-
-    fclose(fid4);
 
     double sigma_range = 92.5;          // [m]
     double sigma_az = 0.0224 * Constants::Rad; // [rad]
@@ -84,9 +80,9 @@ int main() {
 
 
     Position(lon, lat, alt, Rs);
-    int Mjd1 = obs(1, 1);
-    int Mjd2 = obs(9, 1);
-    int Mjd3 = obs(18, 1);
+    int Mjd1 = (*globals::obs)(1, 1);
+    int Mjd2 = (*globals::obs)(9, 1);
+    int Mjd3 = (*globals::obs)(18, 1);
 
 
     Matrix LT_matrix(3,3);
@@ -102,7 +98,7 @@ int main() {
 
     double Mjd0 = Mjday(1995, 1, 29, 2, 38, 0);
 
-    double Mjd_UTC = obs(9, 1);
+    double Mjd_UTC = (*globals::obs)(9, 1);
     auxParam.sun = 1;
     auxParam.moon = 1;
     auxParam.planets = 1;
@@ -113,9 +109,10 @@ int main() {
 
     double n_eqn = 6;
     Matrix Y(6,1);
-    DEInteg(Accel,0,-(obs(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr,eopdata,Snm,Cnm,PC);
+    Y0_apr.print();
+
+    DEInteg(Accel,0,-((*globals::obs)(9,1)-Mjd0)*86400.0,1e-13,1e-6,6,Y0_apr);
     Y = Y0_apr;
-    double gd = -(obs(9,1)-Mjd0)*86400.0;
     Matrix P(6, 6);
 
     for (i = 1; i < 4; i++) {
@@ -160,10 +157,10 @@ int main() {
         t_old = t;
         Y_old = Y;
 
-        Mjd_UTC = obs(i, 1);
+        Mjd_UTC = (*globals::obs)(i, 1);
         t = (Mjd_UTC - Mjd0) * 86400.0;
 
-        Resulteop = IERS(eopdata, Mjd_UTC, 'l');
+        Resulteop = IERS(*globals::eopdata, Mjd_UTC, 'l');
         x_pole = Resulteop(1, 1);
         y_pole = Resulteop(1, 2);
          UT1_UTC = Resulteop(1, 3);
@@ -194,7 +191,7 @@ int main() {
     }
 }
 }
-        DEInteg(VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi,eopdata,Snm,Cnm,PC);
+        DEInteg(VarEqn,0,t-t_old,1e-13,1e-6,42,yPhi);
 
     for (j = 1; j <= 6; j++) {
         for( n=1; n <Phi.fil;n++) {
@@ -202,7 +199,7 @@ int main() {
         }
     }
 
-       DEInteg(Accel,0,t-t_old,1e-13,1e-6,6,Y_old,eopdata,Snm,Cnm,PC);
+       DEInteg(Accel,0,t-t_old,1e-13,1e-6,6,Y_old);
         Y = Y_old;
 
         theta = gmst(Mjd_UT1);
@@ -232,7 +229,7 @@ int main() {
 
         dAdY = Matrix::concat(dAdY2,cer);
 
-        K = MeasUpdate( Y, obs(i,2), Azim, sigma_az, dAdY, P, 6);
+        K = MeasUpdate( Y, (*globals::obs)(i,2), Azim, sigma_az, dAdY, P, 6);
 
 
         r(1,1) = Y(1,1);
@@ -250,7 +247,7 @@ int main() {
          dEdY2 = dEds*LT*U;
          dEdY = Matrix::concat(dEdY2,cer);
 
-        K = MeasUpdate ( Y, obs(i,3), Elev, sigma_el, dEdY, P, 6 );
+        K = MeasUpdate ( Y, (*globals::obs)(i,3), Elev, sigma_el, dEdY, P, 6 );
         r(1,1) = Y(1,1);
         r(1,2) = Y(1,2);
         r(1,3) = Y(1,3);
@@ -262,10 +259,10 @@ int main() {
          DD = dDds.transpose();
          dDdY2 = DD*LT*U;
          dDdY = Matrix::concat(dDdY2,cer);
-        K= MeasUpdate( Y, obs(i,4), dis, sigma_range, dDdY, P, 6 );
+        K= MeasUpdate( Y, (*globals::obs)(i,4), dis, sigma_range, dDdY, P, 6 );
     }
 
-    Resulteop = IERS(eopdata, obs(46,1), 'l');
+    Resulteop = IERS(*globals::eopdata, (*globals::obs)(46,1), 'l');
      x_pole = Resulteop(1, 1);
     y_pole = Resulteop(1, 2);
      UT1_UTC = Resulteop(1, 3);
@@ -282,7 +279,7 @@ int main() {
     auxParam.Mjd_UTC = Mjd_UTC;
     auxParam.Mjd_TT = Mjd_TT;
 
-    DEInteg (Accel,0,-(obs(46,1)-obs(1,1))*86400.0,1e-13,1e-6,6,Y,eopdata,Snm,Cnm,PC);
+    DEInteg(Accel,0,-((*globals::obs)(46,1)-(*globals::obs)(1,1))*86400.0,1e-13,1e-6,6,Y);
     Matrix Y0 = Y;
     double Y_t[6] = {5753.173e3, 2673.361e3, 3440.304e3, 4.324207e3, -1.924299e3, -5.728216e3};
     Matrix Y_true(6,1,Y_t,6);
@@ -302,3 +299,4 @@ int main() {
 
     return 0;
 }
+*/
