@@ -45,7 +45,7 @@
 
 #define TOL_ 10e-14
 
-using namespace std;
+
 int tests_run = 0;
 Constants c;
 
@@ -846,8 +846,9 @@ int main()
 
     int result = all_tests();
 
-    if (result == 0)
+    if (result == 0){
         printf("PASSED\n");
+    }
 
    printf("Tests run: %d\n", tests_run);
    return result != 0;
