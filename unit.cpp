@@ -4,12 +4,18 @@
 
 #include "unit.h"
 #include "math.h"
+
+/**
+ * @param vec El vector que se va a normalizar.
+ * @return El vector normalizado.
+ */
+
 Matrix unit(Matrix& vec) {
     const double small = 0.000001;
     double magv = 0.0;
     Matrix outvec(1,3);
 
-    // Calculate the magnitude of the vector
+
     for (int i = 0; i < 3; i++) {
         magv += vec(1,i+1) * vec(1,i+1);
     }

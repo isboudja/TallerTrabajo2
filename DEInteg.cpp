@@ -19,6 +19,21 @@ struct DE_STATE {
     int DE_INVPARAM = 6;
 };
 
+/**
+ * @brief Métodos de integración numérica para ecuaciones diferenciales ordinarias.
+ *
+ * @param func La función que define el sistema de ecuaciones diferenciales ordinarias a integrar.
+ * @param t El tiempo inicial de integración.
+ * @param tout El tiempo final de integración.
+ * @param relerr El error relativo deseado para la integración.
+ * @param abserr El error absoluto deseado para la integración.
+ * @param n_eqn El número de ecuaciones diferenciales ordinarias en el sistema.
+ * @param y La matriz que contiene las condiciones iniciales para el sistema de ecuaciones diferenciales.
+ *
+ * @return Una matriz que contiene los valores de las variables dependientes después de la integración.
+ *         Las dimensiones de esta matriz son (n_eqn, n_steps), donde n_steps es el número de pasos de integración.
+ */
+
 void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double relerr, double abserr, int n_eqn, Matrix &y) {
     double twou = 2 * std::numeric_limits<double>::epsilon();
     double fouru = 4 * std::numeric_limits<double>::epsilon();
@@ -134,8 +149,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
     int km2;
     int ns;
     if (State_ == DE_STATE.DE_INIT|| !OldPermit || (delsgn * del <= 0.0)) {
-        // On start and restart also set the work variables x and yy(*),
-        // store the direction of integration and initialize the step size
+
         start = true;
         x = t;
         yy = y;
@@ -146,7 +160,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
 
     while (true) { // Inicio del bucle de pasos
 
-        // Si ya se ha pasado del punto de salida, interpola la solución y retorna
+
         if (std::abs(x - t) >= absdel) {
             for(n=1;i<=n_eqn;n++){
                 yout(n, 1.0) = 0.0;
@@ -157,13 +171,13 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
             hi = tout - x;
             ki = kold + 1;
 
-            // Inicializa w[*] para calcular g[*]
+
             for (i = 1; i <= ki; ++i) {
                  temp1 = i;
                 w(i + 1, 1) = 1.0 / temp1;
             }
 
-            // Calcula g[*]
+
              term = 0.0;
             for ( j = 2; j <= ki; ++j) {
                 psijm1 = psi_(j, 1);
@@ -194,7 +208,7 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
 
             State_ = DE_STATE.DE_DONE; // Establece el código de
 
-            // orno
+
             t = tout;                   // Establece la variable independiente
             told = t;                   // Almacena la variable independiente
             OldPermit = PermitTOUT;
@@ -379,9 +393,9 @@ void DEInteg(Matrix (*func)(double, Matrix &), double t, double tout, double rel
         }
 
 
-        //% End block 1
 
-        // Block 2
+
+
 
         if (k>=nsp1){
             for (i=nsp1;i<=k;i++){

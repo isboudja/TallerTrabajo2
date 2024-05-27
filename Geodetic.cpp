@@ -7,6 +7,13 @@
 #include "Geodetic.h"
 #include "SAT_Const.h"
 
+/**
+ * @brief Convierte coordenadas cartesianas a coordenadas geodésicas.
+ *
+ * @param r Una matriz que contiene las coordenadas cartesianas 3D [X, Y, Z].
+ * @return Una matriz que contiene las coordenadas geodésicas [longitud, latitud, altura].
+ *
+ */
 Matrix Geodetic(const Matrix& r) {
 
 

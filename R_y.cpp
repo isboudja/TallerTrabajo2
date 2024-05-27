@@ -4,6 +4,16 @@
 
 #include "R_y.h"
 #include <math.h>
+
+/**
+ * @brief Calcula la matriz de rotación alrededor del eje Y.
+ *
+ * @param alpha Ángulo de rotación en radianes.
+ * @return Matriz de rotación 3x3 que rota los vectores alrededor del eje Y
+ *         por el ángulo especificado.
+ *
+ */
+
 Matrix R_y(double alpha) {
 
     double C = cos(alpha);

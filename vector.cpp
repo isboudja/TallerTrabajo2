@@ -1,10 +1,7 @@
 #include <cmath>
 #include "vector.h"
 
-// Función que calcula la norma de un vector
-// In: v vector (double)
-// In: n dimensión (int)
-// Out: devuelve la norma de v
+
 double norm(double v[], int n)
 {
 	double suma = 0.0;
@@ -19,10 +16,7 @@ double norm(double v[], int n)
 	return(sqrt(suma));
 }
 
-// Función que calcula el producto escalar de dos vectores
-// In: v1, v2 vectores (double)
-// In: n1, n2 dimensiones (int)
-// Out: devuelve el producto escalar de v1 y v2
+
 double dot(double v1[], double v2[], int n1, int n2)
 {
         double suma = 0.0;

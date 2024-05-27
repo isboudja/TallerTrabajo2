@@ -11,16 +11,19 @@
 #include "R_x.h"
 #include "R_z.h"
 
-// Función para calcular la matriz de nutación
-Matrix NutMatrix(double Mjd_TT) {
-    // Calcular la oblicuidad media de la eclíptica
-    double eps = MeanObliquity(Mjd_TT);
+/**
+ * @brief Calcula la matriz de rotación asociada a las variaciones en la oblicuidad eclíptica y en la longitud eclíptica para una fecha dada en Tiempo Terrestre (TT).
+ *
+ * @param Mjd_TT La Fecha Juliana Modificada (MJD) en Tiempo Terrestre (TT).
+ * @return La matriz de rotación asociada a las variaciones en la oblicuidad eclíptica y en la longitud eclíptica.
+ *
+ */
 
-    // Calcular la nutación en longitud y oblicuidad
+Matrix NutMatrix(double Mjd_TT) {
+
+    double eps = MeanObliquity(Mjd_TT);
     double dpsi, deps;
     NutAngles(Mjd_TT, dpsi, deps);
-
-    // Transformación de ecuador y equinoccio medio a verdadero
     Matrix NutMat = R_x(-eps - deps) * R_z(-dpsi) * R_x(+eps);
 
     return NutMat;

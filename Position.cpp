@@ -4,6 +4,16 @@
 
 #include "Position.h"
 #include "SAT_Const.h"
+
+/**
+ * @brief Calcula la posición tridimensional (coordenadas cartesianas) de un punto sobre la Tierra.
+ *
+ * @param lon Longitud del punto en radianes.
+ * @param lat Latitud del punto en radianes.
+ * @param h Altura sobre el elipsoide de referencia en metros.
+ * @param r Matriz de 1x3 donde se almacenarán las coordenadas cartesianas resultantes [x, y, z].
+ *
+ */
 void Position(double lon, double lat, double h, Matrix& r) {
 
     double R_equ = Constants::R_Earth;
@@ -13,7 +23,7 @@ void Position(double lon, double lat, double h, Matrix& r) {
     double CosLat = cos(lat);
     double SinLat = sin(lat);
 
-    // Position vector
+
     double N = R_equ / sqrt(1.0 - e2 * SinLat * SinLat);
 
     r(1,1) = (N + h) * CosLat * cos(lon);

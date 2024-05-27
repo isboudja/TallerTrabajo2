@@ -25,8 +25,7 @@
 /*
 int main() {
 
-    // Carga de archivos
-    // Código para cargar archivos GGM03S.txt, eop19620101.txt, y GEOS3.txt
+
 
 
     globals::eop1962();
@@ -69,14 +68,14 @@ int main() {
     Matrix Rs(nobs, 4);
 
 
-    double sigma_range = 92.5;          // [m]
-    double sigma_az = 0.0224 * Constants::Rad; // [rad]
-    double sigma_el = 0.0139 * Constants::Rad; // [rad]
+    double sigma_range = 92.5;
+    double sigma_az = 0.0224 * Constants::Rad;
+    double sigma_el = 0.0139 * Constants::Rad;
 
 
-    double lat = Constants::Rad * 21.5748;   // [rad]
-    double lon = Constants::Rad * (-158.2706); // [rad]
-    double alt = 300.20;                // [m]
+    double lat = Constants::Rad * 21.5748;
+    double lon = Constants::Rad * (-158.2706);
+    double alt = 300.20;
 
 
     Position(lon, lat, alt, Rs);

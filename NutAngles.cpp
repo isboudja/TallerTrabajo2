@@ -7,6 +7,14 @@
 #include "Matrix.h"
 #include "math.h"
 
+/**
+ * @brief Calcula las variaciones en la longitud eclíptica  y en la oblicuidad eclíptica para una fecha dada en Tiempo Terrestre (TT).
+ *
+ * @param Mjd_TT La Fecha Juliana Modificada en Tiempo Terrestre.
+ * @param dpsi   La variación en la longitud eclíptica  en radianes.
+ * @param deps   La variación en la oblicuidad eclíptica en radianes.
+ *
+ */
 
 void NutAngles(double Mjd_TT, double& dpsi, double& deps) {
     long double T = (Mjd_TT - 51544.5) / 36525.0;

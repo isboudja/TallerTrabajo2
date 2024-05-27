@@ -7,6 +7,16 @@
 #include "IERS.h"
 #include "SAT_Const.h"
 
+/**
+ * @brief Interpola o extrapola Parámetros de Orientación de la Tierra a partir de una matriz EOP dada.
+ *
+ *
+ * @param eop Matriz que contiene los Parámetros de Orientación de la Tierra.
+ * @param Mjd_UTC Fecha Juliana Modificada.
+ * @param interp Modo de interpolación ('l' para interpolación lineal, 'n' para extrapolación al vecino más cercano).
+ * @return Matrix Parámetros de Orientación de la Tierra (EOP) interpolados o extrapolados.
+ */
+
 Matrix IERS(Matrix& eop, double Mjd_UTC, char interp){
 
 double mfme, fixf;

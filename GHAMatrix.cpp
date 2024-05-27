@@ -6,6 +6,14 @@
 #include "gast.h"
 #include "R_z.h"
 
+/**
+ * @brief Calcula la matriz del Ángulo Horario de Greenwich.
+ *
+ *
+ * @param Mjd_UT1 Fecha Juliana Modificada.
+ * @return Matrix La matriz del Ángulo Horario de Greenwich.
+ */
+
 Matrix GHAMatrix(double Mjd_UT1) {
 
     double GAST = gast(Mjd_UT1);

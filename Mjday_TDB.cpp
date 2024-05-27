@@ -5,11 +5,18 @@
 #include "math.h"
 #include "Mjday_TDB.h"
 
+/**
+ * @brief Calcula la Fecha Juliana Modificada en Tiempo Dinámico Bariocéntrico  a partir de la Fecha Juliana Modificada en Tiempo Terrestre  dada.
+ *
+ * @param Mjd_TT La Fecha Juliana Modificada en Tiempo Terrestre.
+ *
+ * @return La Fecha Juliana Modificada en Tiempo Dinámico Bariocéntrico.
+ */
+
 double Mjday_TDB(double Mjd_TT) {
-    // Compute Julian Centuries of TT
+
     double T_TT = (Mjd_TT - 51544.5) / 36525;
 
-    // Compute Modified Julian Date of TDB
     double Mjd_TDB = Mjd_TT + (0.001658 * sin(628.3076 * T_TT + 6.2401) +
                                0.000022 * sin(575.3385 * T_TT + 4.2970) +
                                0.000014 * sin(1256.6152 * T_TT + 6.1969) +

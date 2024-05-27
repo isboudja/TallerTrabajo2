@@ -6,6 +6,19 @@
 #include "R_z.h"
 #include "R_y.h"
 #include "SAT_Const.h"
+
+
+
+/**
+ * @brief Calcula la matriz de precesión para un intervalo de tiempo dado.
+ *
+ * @param Mjd_1 Momento inicial del intervalo de tiempo en Tiempo Terrestre Modificado (TTMJD).
+ * @param Mjd_2 Momento final del intervalo de tiempo en Tiempo Terrestre Modificado (TTMJD).
+ * @return Matriz de precesión que transforma las coordenadas de un sistema de referencia
+ *         a otro sistema de referencia debido a la precesión de los ejes de la Tierra.
+ *
+ */
+
 Matrix PrecMatrix(double Mjd_1, double Mjd_2) {
     Constants c;
     double T  = (Mjd_1 - c.MJD_J2000) / 36525;

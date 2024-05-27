@@ -7,6 +7,22 @@
 #include <cstdio>
 #include "SAT_Const.h"
 
+/**
+ * @brief Calcula el azimut, la elevación y sus derivadas parciales.
+ *
+ * @param s Una referencia a una Matriz que representa el vector de posición (matriz 1x3).
+ *
+ * @return Una Matriz que contiene el azimut, la elevación y sus derivadas parciales (matriz 1x8):
+ * - result(1, 1): Ángulo de azimut (Az) en radianes.
+ * - result(1, 2): Ángulo de elevación (El) en radianes.
+ * - result(1, 3): Derivada parcial de Az respecto a x.
+ * - result(1, 4): Derivada parcial de Az respecto a y.
+ * - result(1, 5): Derivada parcial de Az respecto a z.
+ * - result(1, 6): Derivada parcial de El respecto a x.
+ * - result(1, 7): Derivada parcial de El respecto a y.
+ * - result(1, 8): Derivada parcial de El respecto a z.
+ */
+
 Matrix AzElPa(const Matrix& s) {
 
     double rho = sqrt(s(1, 1) * s(1, 1) + s(1, 2) * s(1, 2));

@@ -6,8 +6,16 @@
 #include "SAT_Const.h"
 #include <cmath>
 
-const double MJD_J2000 = 51544.5; // Modifica según el valor de const.MJD_J2000 en tu código
+const double MJD_J2000 = 51544.5;
 const double Rad = M_PI / 180.0;
+
+/**
+ * Calcula la oblicuidad media de la eclíptica para una fecha juliana de Tiempo Terrestre dada.
+ *
+ * @param Mjd_TT La fecha juliana de Tiempo Terrestre .
+ *
+ * @return La oblicuidad media de la eclíptica en radianes.
+ */
 
 double MeanObliquity(double Mjd_TT) {
     double T = (Mjd_TT - Constants::MJD_J2000) / 36525.0;

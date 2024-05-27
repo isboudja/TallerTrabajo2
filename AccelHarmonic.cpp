@@ -8,6 +8,18 @@
 #include "Legendre.h"
 #include "globals.h"
 
+/**
+ * @brief Calcula la aceleración debido a los armónicos gravitacionales de la Tierra.
+ *
+ *
+ * @param r Una referencia a una Matriz que representa el vector de posición del satélite en el marco inercial (matriz 3x1).
+ * @param E Una referencia a una Matriz que representa la matriz de transformación del marco inercial al marco fijo del cuerpo (matriz 3x3).
+ * @param n_max El grado máximo de la expansión armónica esférica.
+ * @param m_max El orden máximo de la expansión armónica esférica.
+ *
+ * @return Una Matriz que contiene el vector de aceleración en el marco inercial (matriz 1x3).
+ */
+
 Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
 
     int n;
@@ -66,7 +78,7 @@ Matrix AccelHarmonic(Matrix &r,Matrix &E,double n_max,double m_max) {
         dUdlatgc += q2 * b2;
         dUdlon += q3 * b3;
 
-        // Restablecer q1, q2, y q3 a cero para la próxima iteración de n
+
         q1 = 0.0;
         q2 = 0.0;
         q3 = 0.0;

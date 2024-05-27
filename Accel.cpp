@@ -19,6 +19,15 @@
 #include "JPL_Eph_DE430.h"
 #include "globals.h"
 
+/**
+ * @brief Calcula la aceleración debido a varios cuerpos celestes y fuerzas en un momento dado.
+ *
+ * @param x La variable de tiempo, que representa la diferencia de tiempo desde un epoch de referencia, en segundos.
+ * @param Y Una referencia a una Matriz que contiene el vector de estado del satélite (posición y velocidad).
+ *          El vector de estado debe tener dimensiones (6, 1), con los primeros tres elementos representando
+ *          la posición (x, y, z) en km y los siguientes tres elementos representando la velocidad (vx, vy, vz) en km/s.
+ */
+
 Matrix Accel(double x,Matrix &Y){
 
     double x_pole, y_pole, UT1_UTC, LOD, dpsi, deps, dx_pole, dy_pole, TAI_UTC;
@@ -27,7 +36,7 @@ Matrix Accel(double x,Matrix &Y){
     AuxParam.Mjd_UTC = 4.974611635416653e+04;
 
 
-    // Cálculo de los parámetros de tiempo
+
 
     Matrix result(1,9);
     result = IERS(*globals::eopdata, AuxParam.Mjd_UTC + x/86400,'n');
@@ -46,7 +55,7 @@ Matrix Accel(double x,Matrix &Y){
     double Mjd_UT1 = AuxParam.Mjd_UTC + x / 86400 + UT1_UTC / 86400;
     double Mjd_TT = AuxParam.Mjd_UTC + x / 86400 + TT_UTC / 86400;
 
-    // Matrices de transformación
+
     Matrix P = PrecMatrix(c.MJD_J2000, Mjd_TT);
     Matrix N = NutMatrix(Mjd_TT);
     Matrix T = N * P;
@@ -78,7 +87,7 @@ Matrix Accel(double x,Matrix &Y){
         r_Sun2(1,j) = res(1,j+30);
 
     }
-    // Aceleración debida al campo gravitacional armónico
+
 
     Matrix r(3,1);
     Matrix a2(1,3);
@@ -95,7 +104,7 @@ Matrix Accel(double x,Matrix &Y){
     Matrix r2 = r.transpose();
 
 
-    // Perturbaciones luni-solares
+
     if (AuxParam.sun) {
         a = a + AccelPointMass(r2, r_Sun2, c.GM_Sun);
     }
@@ -103,7 +112,7 @@ Matrix Accel(double x,Matrix &Y){
         a = a + AccelPointMass(r2, r_Moon2, c.GM_Moon);
     }
 
-    // Perturbaciones planetarias
+
     if (AuxParam.planets) {
         a = a + AccelPointMass(r2, r_Mercury2, c.GM_Mercury);
         a = a + AccelPointMass(r2, r_Venus2, c.GM_Venus);

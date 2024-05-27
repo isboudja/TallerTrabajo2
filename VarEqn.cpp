@@ -16,6 +16,11 @@
 #include "G_AccelHarmonic.h"
 #include "globals.h"
 
+/**
+ * @param x El tiempo de entrada en segundos.
+ * @param yPhi La matriz de estado y matriz de covarianza asociada en el tiempo de entrada.
+ * @return La derivada de la matriz de estado con respecto al tiempo.
+ */
 
 Matrix VarEqn(double x,Matrix &yPhi){
 

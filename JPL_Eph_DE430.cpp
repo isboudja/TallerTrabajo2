@@ -8,6 +8,25 @@
 #include "Cheb3D.h"
 #include "globals.h"
 
+/**
+ * Calcula las posiciones de los cuerpos celestes basándose en el modelo DE430 del Efemerides JPL.
+ *
+ * @param Mjd_TDB Fecha Juliana Modificada en formato TDB (Tiempo Dinámico Bariocéntrico).
+ *
+ * @return Una matriz que contiene las posiciones cartesianas de los cuerpos celestes en kilómetros, dispuestas de la siguiente manera:
+ *         - Columnas 1 a 3: Posición de Mercurio
+ *         - Columnas 4 a 6: Posición de Venus
+ *         - Columnas 7 a 9: Posición de la Tierra
+ *         - Columnas 10 a 12: Posición de Marte
+ *         - Columnas 13 a 15: Posición de Júpiter
+ *         - Columnas 16 a 18: Posición de Saturno
+ *         - Columnas 19 a 21: Posición de Urano
+ *         - Columnas 22 a 24: Posición de Neptuno
+ *         - Columnas 25 a 27: Posición de Plutón
+ *         - Columnas 28 a 30: Posición de la Luna
+ *         - Columnas 31 a 33: Posición del Sol
+ */
+
 Matrix JPL_Eph_DE430(double Mjd_TDB) {
 
     Matrix x(1,100);

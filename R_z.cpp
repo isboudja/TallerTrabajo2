@@ -5,6 +5,14 @@
 #include "Matrix.h"
 #include <math.h>
 
+/**
+ * @brief Calcula la matriz de rotación alrededor del eje Z.
+ *
+ * @param alpha Ángulo de rotación en radianes.
+ * @return Matriz de rotación 3x3 que rota los vectores alrededor del eje Z
+ *         por el ángulo especificado.
+ *
+ */
 
 Matrix R_z(double alpha) {
 

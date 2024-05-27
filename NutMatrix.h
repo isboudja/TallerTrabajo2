@@ -8,7 +8,7 @@
 
 #include "Matrix.h"
 
-// Función para calcular la matriz de nutación
+
 Matrix NutMatrix(double Mjd_TT);
 
 

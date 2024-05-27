@@ -8,6 +8,16 @@
 #include <stdexcept>
 #include <limits>
 
+/**
+ * @brief Calcular la anomalía excéntrica para una anomalía media y excentricidad dadas.
+ *
+ * @param M Anomalía media (radianes).
+ * @param e Excentricidad de la órbita (adimensional, 0 <= e < 1).
+ *
+ * @return double La anomalía excéntrica (radianes).
+ *
+ */
+
 double EccAnom(double M, double e) {
     const int m = 15;
     int i = 1;

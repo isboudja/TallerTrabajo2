@@ -7,6 +7,16 @@
 #include <cmath>
 #include "Matrix.h" // Asegúrate de incluir la definición de la clase Matrix
 
+/**
+ * @brief las funciones Legendre asociadas y sus derivadas hasta el grado n y orden m,evaluadas en la latitud dada.
+ *
+ * @param n El grado máximo de los polinomios de Legendre.
+ * @param m El orden máximo de los polinomios de Legendre.
+ * @param fi La latitud en radianes donde se evalúan las funciones Legendre asociadas.
+ *
+ * @return Una matriz que contiene las funciones Legendre asociadas y sus derivadas
+ */
+
 Matrix Legendre(int n, int m, double fi) {
 
     Matrix pnm((n + 1), (m + 1));

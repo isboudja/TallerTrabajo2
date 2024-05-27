@@ -4,6 +4,14 @@
 #include "Matrix.h"
 #include <math.h>
 
+/**
+ * @brief la matriz de rotación alrededor del eje X.
+ *
+ * @param alpha Ángulo de rotación en radianes.
+ * @return Matriz de rotación 3x3 que rota los vectores alrededor del eje X
+ *         por el ángulo especificado.
+ *
+ */
 
 Matrix R_x(double alpha) {
 
